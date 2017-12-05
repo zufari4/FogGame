@@ -1,0 +1,12 @@
+﻿  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_freetype.cpp
+  imgui_impl_sdl.cpp
+  Editor.cpp
+     Creating library C:\Users\User\documents\visual studio 2015\Projects\Game\Build\Release\Editor.lib and object C:\Users\User\documents\visual studio 2015\Projects\Game\Build\Release\Editor.exp
+  Generating code
+  All 1138 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Editor.vcxproj -> C:\Users\User\documents\visual studio 2015\Projects\Game\Build\Release\Editor.exe
+  Editor.vcxproj -> C:\Users\User\documents\visual studio 2015\Projects\Game\Build\Release\Editor.pdb (Full PDB)
