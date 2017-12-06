@@ -1,5 +1,0 @@
-﻿  SupportRectangle.cpp
-c:\users\user\documents\visual studio 2015\projects\game\engine\supportrectangle.cpp(139): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
-c:\users\user\documents\visual studio 2015\projects\game\engine\supportrectangle.cpp(142): warning C4244: 'argument': conversion from 'int' to 'float32', possible loss of data
-GameObject.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
-  Engine.vcxproj -> C:\Users\User\documents\visual studio 2015\Projects\Game\Build\Debug\Engine.lib
