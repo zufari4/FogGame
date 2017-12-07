@@ -1,13 +1,13 @@
 #pragma once
 
-class BaseClass {};
+class Base_class {};
 
 
-typedef void (BaseClass::*MemPointer)();
+typedef void (Base_class::*Mem_pointer)();
 
 typedef struct
 {
-    BaseClass* obj;
-    MemPointer func;
-} ClassCallback;
+    Base_class* obj;
+    Mem_pointer func;
+} Callback;
 

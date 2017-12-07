@@ -109,7 +109,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2D.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dd.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x86</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>
@@ -131,7 +131,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2D.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dd.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x64</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>
@@ -157,7 +157,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2D.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dr.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x86</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>
@@ -183,7 +183,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2D.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dr.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x64</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>

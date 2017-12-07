@@ -1,25 +1,24 @@
 #include "phy_box.h"
 #include "engine.h"
 
-PhyBox::PhyBox():
-    SupportRectangle()
+Phy_box::Phy_box():
+    Support_rectangle()
 {
     body =  NULL;
     fixture = NULL;
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
+    b2BodyDef body_def;
+    body_def.type = b2_dynamicBody;
     oldp = vec2(p2m(pos.x), p2m(pos.y));
-    bodyDef.position = oldp;
-    body = Engine.CreateBody(&bodyDef);
-    SetRect(vec2(0, 0), vec2(10, 10));
-    sqared = false;
+    body_def.position = oldp;
+    body = engine.Create_body(body_def);
+    Set_rect(vec2(0, 0), vec2(10, 10));
 }
 
-void PhyBox::OnChanged()
+void Phy_box::On_changed()
 {
-    bool prevRunned = !Engine.phyPause;
+    bool prev_runned = !engine.phy_pause;
 
-    Engine.PausePhysics();
+    engine.Pause_physics();
 
     body->SetActive(false);
     body->SetLinearVelocity(b2Vec2_zero);
@@ -27,7 +26,7 @@ void PhyBox::OnChanged()
 
     oldp = vec2(p2m(pos.x), p2m(pos.y));
     body->SetTransform(oldp, 0.0f);
-    angle = 0;
+    angle = 0.0f;
 
     vec2 chanVert[4];
     vec2  v;
@@ -38,23 +37,23 @@ void PhyBox::OnChanged()
     v = d - pos;  chanVert[3] = vec2(p2m(v.x), p2m(v.y));
    
     shape.Set(chanVert, 4);
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &shape;
-    fixtureDef.density = 0.5f;
-    fixtureDef.friction = 0.5f;
-    fixtureDef.restitution = 0.6f;
+    b2FixtureDef fixture_def;
+    fixture_def.shape = &shape;
+    fixture_def.density = 0.5f;
+    fixture_def.friction = 0.5f;
+    fixture_def.restitution = 0.6f;
     if (fixture) body->DestroyFixture(fixture);
-    fixture = body->CreateFixture(&fixtureDef);
+    fixture = body->CreateFixture(&fixture_def);
    
     body->SetActive(true);
-    if (prevRunned)
-        Engine.StartPhysics();
+    if (prev_runned)
+        engine.Start_physics();
 }
 
-void PhyBox::Update(Uint32 ticks)
+void Phy_box::Update(Uint32 ticks)
 {
     vec2 newpos = body->GetPosition();
-    vec2 delta = phyScale * (newpos - oldp);
+    vec2 delta  = phy_scale * (newpos - oldp);
     oldp = newpos;
     float newangle = body->GetAngle();
 

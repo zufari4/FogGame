@@ -15,6 +15,7 @@ public:
     std::string filename;
     float tcoord[8];
     float vertex[8];
+
     Texture();
     ~Texture();
     bool Load(const char* _filename);

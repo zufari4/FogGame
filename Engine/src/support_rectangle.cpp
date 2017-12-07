@@ -1,15 +1,14 @@
 #include "support_rectangle.h"
 #include "engine.h"
 
-SupportRectangle::SupportRectangle() :
-    GameObject(), selectedVertex(-1), dragPoint(false), dragRect(false),
+Support_rectangle::Support_rectangle():
+    Game_object(), selected_vertex(-1), drag_point(false), drag_rect(false),
     a(b2Vec2_zero), b(b2Vec2_zero),
     c(b2Vec2_zero), d(b2Vec2_zero), sqared(true)
 {
-    Engine.AddGameObject(this);
 }
 
-void SupportRectangle::SetRect(const vec2& _min, const vec2& _max)
+void Support_rectangle::Set_rect(const vec2& _min, const vec2& _max)
 {
     if (_max.Length() < _min.Length()) {
         a = _max;
@@ -22,13 +21,13 @@ void SupportRectangle::SetRect(const vec2& _min, const vec2& _max)
 
     b = vec2(c.x, a.y);
     d = vec2(a.x, c.y);
-    CallCenter(pos);
-    OnChanged();
+    pos = Calc_center();
+    On_changed();
 }
 
-void SupportRectangle::Draw()
+void Support_rectangle::Draw()
 {
-    //Rectagle
+    //Rectangle
     if (selected)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     else
@@ -42,21 +41,23 @@ void SupportRectangle::Draw()
     glVertex2f(d.x, d.y);
     glEnd();
     //Vertexes
-    glPointSize(POINT_SIZE);
-    glBegin(GL_POINTS);
-    if (selectedVertex == 0) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-    else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
-    glVertex2f(a.x, a.y);
-    if (selectedVertex == 1) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-    else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
-    glVertex2f(b.x, b.y);
-    if (selectedVertex == 2) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-    else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
-    glVertex2f(c.x, c.y);
-    if (selectedVertex == 3) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-    else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
-    glVertex2f(d.x, d.y);
-    glEnd();
+    if (selected) {
+        glPointSize(POINT_SIZE);
+        glBegin(GL_POINTS);
+        if (selected_vertex == 0) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        glVertex2f(a.x, a.y);
+        if (selected_vertex == 1) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        glVertex2f(b.x, b.y);
+        if (selected_vertex == 2) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        glVertex2f(c.x, c.y);
+        if (selected_vertex == 3) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        glVertex2f(d.x, d.y);
+        glEnd();
+    }
     //Center
     glPointSize(POINT_SIZE/2.0f);
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
@@ -65,14 +66,14 @@ void SupportRectangle::Draw()
     glEnd();
 }
 
-void SupportRectangle::Rotate(float deltaRad)
+void Support_rectangle::Rotate(float delta_rad)
 {
-    if (deltaRad == 0.0f)
+    if (delta_rad == 0.0f)
         return;
-   angle += deltaRad;
+   angle += delta_rad;
 
-   float cc = cosf(deltaRad);
-   float ss = sinf(deltaRad);
+   float cc = cosf(delta_rad);
+   float ss = sinf(delta_rad);
    float x;
 
    a -= pos;
@@ -97,99 +98,101 @@ void SupportRectangle::Rotate(float deltaRad)
 }
 
 
-void SupportRectangle::OnMouseMove(int x, int y)
+void Support_rectangle::On_mouse_move(int x, int y)
 {
-    if (!selected) return;
+    if (!visible || !selected) return;
 
     vec2 cursor((float)x, (float)y);
-    if (dragRect) {
-        vec2 delta = cursor - dragStart;
+    if (drag_rect) {
+        vec2 delta = cursor - drag_start;
         a += delta;
         b += delta;
         c += delta;
         d += delta;
         pos += delta;
-        dragStart = cursor;
+        drag_start = cursor;
     }
-    else if (dragPoint) {
-        switch (selectedVertex)
+    else if (drag_point) {
+        switch (selected_vertex)
         {
         case 0: a = cursor; if (sqared) { d.x = a.x; b.y = a.y; } break;
         case 1: b = cursor; if (sqared) { c.x = b.x; a.y = b.y; } break;
         case 2: c = cursor; if (sqared) { b.x = c.x; d.y = c.y; } break;
         case 3: d = cursor; if (sqared) { a.x = d.x; c.y = d.y; } break;
         }
-        CallCenter(pos);
+        pos = Calc_center();
     }
-    else if (InPoint(a, cursor)) selectedVertex = 0;
-    else if (InPoint(b, cursor)) selectedVertex = 1;
-    else if (InPoint(c, cursor)) selectedVertex = 2;
-    else if (InPoint(d, cursor)) selectedVertex = 3;
-    else selectedVertex = -1;
+    else if (In_point(a, cursor)) selected_vertex = 0;
+    else if (In_point(b, cursor)) selected_vertex = 1;
+    else if (In_point(c, cursor)) selected_vertex = 2;
+    else if (In_point(d, cursor)) selected_vertex = 3;
+    else selected_vertex = -1;
 }
 
-void SupportRectangle::OnMouseDown(int x, int y, int b)
+void Support_rectangle::On_mouse_down(int x, int y, int b)
 {
-    if (!visible) return;
+    if (!visible || !selected) return;
 
-    if (selectedVertex != -1) {
-        dragPoint = true;
-        dragRect = false;
+    if (selected_vertex != -1) {
+        drag_point = true;
+        drag_rect  = false;
     }
-    else if (PointInRect(vec2((float)x, (float)y))) {
-        dragRect = true;
-        dragPoint = false;
-        dragStart = vec2((float)x, (float)y);
+    else if (Point_in_rect(vec2((float)x, (float)y))) {
+        drag_rect  = true;
+        drag_point = false;
+        drag_start = vec2((float)x, (float)y);
     }
 }
 
-void SupportRectangle::OnMouseUp(int x, int y, int b)
+void Support_rectangle::On_mouse_up(int x, int y, int b)
 {
-    if (dragPoint || dragRect)
-        OnChanged();
-    dragPoint = false;
-    dragRect = false;
+    if (!visible || !selected) return;
+
+    if (drag_point || drag_rect)
+        On_changed();
+    drag_point = false;
+    drag_rect  = false;
 }
 
-bool SupportRectangle::InPoint(const vec2 & point, const vec2 & cursor)
+bool Support_rectangle::In_point(const vec2& point, const vec2& cursor)
 {
-    vec2 d = point - cursor;
+    vec2  d = point - cursor;
     float r = POINT_SIZE / 2.0f;
     return d.LengthSquared() < r*r;
 }
 
-void SupportRectangle::CallCenter(vec2& center)
+vec2 Support_rectangle::Calc_center()
 {
     vec2 p1 = (a + b); p1 *= 0.5f;
     vec2 p2 = (d + c); p2 *= 0.5f;
     vec2 p3 = (a + d); p3 *= 0.5f;
     vec2 p4 = (b + c); p4 *= 0.5f;
 
-        // Store the values for fast access and easy
-        // equations-to-code conversion
-        float x1 = p1.x, x2 = p2.x, x3 = p3.x, x4 = p4.x;
-        float y1 = p1.y, y2 = p2.y, y3 = p3.y, y4 = p4.y;
-
-        float d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-        // If d is zero, there is no intersection
-        if (d == 0) return;
-
-        // Get the x and y
-        float pre = (x1*y2 - y1*x2), post = (x3*y4 - y3*x4);
-        float x = (pre * (x3 - x4) - (x1 - x2) * post) / d;
-        float y = (pre * (y3 - y4) - (y1 - y2) * post) / d;
-
-        // Check if the x and y coordinates are within both lines
-        if (x < std::min(x1, x2) || x > std::max(x1, x2) ||
-            x < std::min(x3, x4) || x > std::max(x3, x4)) return;
-        if (y < std::min(y1, y2) || y > std::max(y1, y2) ||
-            y < std::min(y3, y4) || y > std::max(y3, y4)) return;
-
-        // Return the point of intersection
-        center = vec2(x, y);
+    // Store the values for fast access and easy
+    // equations-to-code conversion
+    float x1 = p1.x, x2 = p2.x, x3 = p3.x, x4 = p4.x;
+    float y1 = p1.y, y2 = p2.y, y3 = p3.y, y4 = p4.y;
+    
+    float d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    // If d is zero, there is no intersection
+    if (d == 0) return pos;
+    
+    // Get the x and y
+    float pre = (x1*y2 - y1*x2), post = (x3*y4 - y3*x4);
+    float x = (pre * (x3 - x4) - (x1 - x2) * post) / d;
+    float y = (pre * (y3 - y4) - (y1 - y2) * post) / d;
+    
+    // Check if the x and y coordinates are within both lines
+    if (x < std::min(x1, x2) || x > std::max(x1, x2) ||
+        x < std::min(x3, x4) || x > std::max(x3, x4)) return pos;
+    if (y < std::min(y1, y2) || y > std::max(y1, y2) ||
+        y < std::min(y3, y4) || y > std::max(y3, y4)) return pos;
+    
+    // Return the point of intersection
+    return vec2(x, y);
 }
 
-bool SupportRectangle::PointInRect(const vec2 & point)
+bool Support_rectangle::Point_in_rect(const vec2& point)
 {
     /*
     int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
@@ -221,6 +224,16 @@ bool SupportRectangle::PointInRect(const vec2 & point)
         (point.x < (c.x - d.x) * (point.y - d.y) / (c.y - d.y) + d.x))
         r = !r;
 
-    return r || (selectedVertex != -1);
+    return r;
+}
+
+bool Support_rectangle::Cursor_enter(const vec2& cursor)
+{
+    if (Point_in_rect(cursor)) return true;
+    else if (In_point(a, cursor)) return true;
+    else if (In_point(b, cursor)) return true;
+    else if (In_point(c, cursor)) return true;
+    else if (In_point(d, cursor)) return true;
+    else return false;
 }
 

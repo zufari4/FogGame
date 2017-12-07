@@ -3,14 +3,14 @@
 #include "game_object.h"
 #include "support_rectangle.h"
 
-class PhyBox : public SupportRectangle
+class Phy_box : public Support_rectangle
 {
 public:
-    PhyBox();
-    void OnChanged();
+    Phy_box();
+    void On_changed();
     void Update(Uint32);
 private:
-    vec2 oldp;
+    vec2    oldp;
     b2Body* body;
     b2PolygonShape shape;
     b2Fixture* fixture;   

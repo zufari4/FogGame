@@ -5,30 +5,32 @@
 
 #define POINT_SIZE 20.0f
 
-class SupportRectangle : public GameObject
+class Support_rectangle: public Game_object
 {
+public:
+    bool sqared;
 protected:
-    int  selectedVertex;
-    bool dragPoint;
-    bool dragRect;
+    int  selected_vertex;
+    bool drag_point;
+    bool drag_rect;
     vec2 a;
     vec2 b;
     vec2 c;
     vec2 d;
-    vec2 dragStart;
-    virtual void OnMouseMove(int x, int y);
-    virtual void OnMouseDown(int x, int y, int b);
-    virtual void OnMouseUp(int x, int y, int b);
-    bool InPoint(const vec2& point, const vec2& cursor);
-    void CallCenter(vec2& center);
-    
-    virtual void OnChanged() {};
+    vec2 drag_start;
 public:
-    bool sqared;
-    SupportRectangle();
-    virtual void SetRect(const b2Vec2& _min, const b2Vec2& _max);
+    Support_rectangle();
     void Draw();
-    void Rotate(float deltaRad);
-    virtual bool PointInRect(const vec2& point);
+    void Rotate(float delta_rad);
+    virtual void Set_rect(const vec2& _min, const vec2& _max);
+    virtual bool Point_in_rect(const vec2& point);
+    virtual bool Cursor_enter(const vec2& cursor);
+private:
+    virtual void On_mouse_move(int x, int y);
+    virtual void On_mouse_down(int x, int y, int b);
+    virtual void On_mouse_up(int x, int y, int b);
+    virtual void On_changed() {};
+    bool In_point(const vec2& point, const vec2& cursor);
+    vec2 Calc_center();    
 };
 

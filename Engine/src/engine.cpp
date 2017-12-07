@@ -3,27 +3,27 @@
 #include <imgui_freetype.h>
 #include "engine.h"
 
-float phyScale = 250.0f;
+float   phy_scale = 1.0f;
 
-engine::engine():
-    phyWorld(vec2(0.0f,10.0f)),
+Engine::Engine():
+    phy_world(vec2(0.0f,10.0f)),
     init(false),
     window(NULL),
-    glContext(NULL),
-    phyPause(false)
+    gl_context(NULL),
+    phy_pause(false)
 {
-    frameCallback.func = NULL;
-    mouseDownCallback.func = NULL;
-    mouseUpCallback.func = NULL;
-    mouseMoveCallback.func = NULL;
+    callback_frame.func      = NULL;
+    callback_mouse_down.func = NULL;
+    callback_mouse_up.func   = NULL;
+    callback_mouse_move.func = NULL;
 }
 
-engine::~engine()
+Engine::~Engine()
 {
     Cleanup();
 }
 
-bool engine::Init(const char* title, int width, int height, int exflags)
+bool Engine::Init(const char* title, int width, int height, int exflags)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
         return false;
@@ -34,10 +34,10 @@ bool engine::Init(const char* title, int width, int height, int exflags)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-    Uint32 windowFlags = SDL_WINDOW_OPENGL | exflags;
+    Uint32 window_flags = SDL_WINDOW_OPENGL | exflags;
 
-    window = SDL_CreateWindow(title, 0, 0, width, height, windowFlags);
-    glContext = SDL_GL_CreateContext(window);
+    window     = SDL_CreateWindow(title, 0, 0, width, height, window_flags);
+    gl_context = SDL_GL_CreateContext(window);
 
     int dw, dh;
     SDL_GL_GetDrawableSize(window, &dw, &dh);
@@ -56,7 +56,6 @@ bool engine::Init(const char* title, int width, int height, int exflags)
     glClearColor(0.4f, 0.4f, 0.6f, 1.0f);
 
     ImGui_ImplSdlGL2_Init(window);
-
     ImGuiStyle* style = &ImGui::GetStyle();
     style->WindowRounding = 3;
     style->FrameRounding  = 3;
@@ -67,47 +66,47 @@ bool engine::Init(const char* title, int width, int height, int exflags)
     return true;
 }
 
-bool engine::InitPhysics(const vec2& gravity, float scale, int TimeUpdate, int velIters, int posIters)
+bool Engine::Init_physics(const vec2& gravity, float scale, int time_update, int vel_iters, int pos_iters)
 {
-    phyScale = scale;
-    phyStep = TimeUpdate;
-    phyVelIters = velIters;
-    phyPosIters = posIters;
-    phyHz = 1.0f/(1000.0f/(float)TimeUpdate);
-    // Construct a world object, which will hold and simulate the rigid bodies.
-    phyWorld.SetGravity(gravity);
+    phy_scale = scale;
+    phy_step  = time_update;
+    phy_vel_iters = vel_iters;
+    phy_pos_iters = pos_iters;
+    phy_hz = 1.0f/(1000.0f/(float)time_update);
+    phy_world.SetGravity(gravity);
 
     return true;
 }
 
-void engine::Cleanup()
+void Engine::Cleanup()
 {
-    for (auto it : gameObjects)
+    for (auto it : game_objects)
         delete it;
     for (auto it : textures)
         delete it;
-    gameObjects.clear();
+    game_objects.clear();
     ImGui_ImplSdlGL2_Shutdown();
-    if (glContext)
-        SDL_GL_DeleteContext(glContext);
+    if (gl_context)
+        SDL_GL_DeleteContext(gl_context);
     if (window)
         SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-void engine::Run()
+void Engine::Run()
 {
     if (!init) return;
     done = false;
-    FrameCallback callback = reinterpret_cast<FrameCallback>(frameCallback.func);
-    int    delta = 0;
+    int delta = 0;
     Uint32 now;
     last = SDL_GetTicks();
-    phyAccum = 0;
-    
+    phy_accum   = 0;
+    phy_updated = false;
+    Callback_frame callback = reinterpret_cast<Callback_frame>(callback_frame.func);
+
     while (!done)
     {
-        ParseEvent();
+        Parse_events();
 
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplSdlGL2_NewFrame(window);
@@ -115,28 +114,25 @@ void engine::Run()
         now   = SDL_GetTicks();
         delta = (now - last);
         last  = now;
-        if (delta > 48) delta = 48;
-        if (!phyPause)
-            UpdatePhysics(delta);
-        else
-            phyAccum = 0;
+        if (delta > 160) delta = 160;
+        Update_physics(delta);
 
-        if (callback)
-            (frameCallback.obj->*callback)(SDL_GetTicks());
-
-        for (auto it : gameObjects) {
-            if (needUpdate)
+        for (auto it : game_objects) {
+            if (phy_updated)
                 it->Update(now);
             if (it->visible)
                 it->Draw();
         }
+
+        if (callback)
+            (callback_frame.obj->*callback)(now);
 
         ImGui::Render();
         SDL_GL_SwapWindow(window);
     }
 }
 
-void engine::ParseEvent()
+void Engine::Parse_events()
 {
     static SDL_Event event;
 
@@ -148,94 +144,94 @@ void engine::ParseEvent()
             done = true;
             break;
         case SDL_MOUSEMOTION:
-            for (auto obj : gameObjects)
-                obj->OnMouseMove(event.motion.x, event.motion.y);
-            if (mouseMoveCallback.func) {
-                MouseMoveCallback callback = reinterpret_cast<MouseMoveCallback>(mouseMoveCallback.func);
-                (mouseMoveCallback.obj->*callback)(event.motion.x, event.motion.y);
+            for (auto obj : game_objects)
+                obj->On_mouse_move(event.motion.x, event.motion.y);
+            if (callback_mouse_move.func) {
+                Callback_mouse_m callback = reinterpret_cast<Callback_mouse_m>(callback_mouse_move.func);
+                (callback_mouse_move.obj->*callback)(event.motion.x, event.motion.y);
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
         {
-            bool sel = true;
-            for (auto obj : gameObjects) {
-                if (obj->PointInRect(vec2((float)event.button.x, (float)event.button.y))) {
-                    obj->selected = sel;
-                    sel = false;
+            vec2 cursor((float)event.button.x, (float)event.button.y);
+            for (auto obj : game_objects) {
+                if (obj->Cursor_enter(cursor)) {
+                    Select_object(obj);
+                    break;
                 }
-                else
-                    obj->selected = false;
-                obj->OnMouseDown(event.button.x, event.button.y, event.button.button);
             }
-            if (mouseDownCallback.func) {
-                MouseKeyCallback callback = reinterpret_cast<MouseKeyCallback>(mouseDownCallback.func);
-                (mouseDownCallback.obj->*callback)(event.button.x, event.button.y, event.button.button);
+            for (auto obj : game_objects) {
+                obj->On_mouse_down(event.button.x, event.button.y, event.button.button);
+            }
+            if (callback_mouse_down.func) {
+                Callback_mouse_k callback = reinterpret_cast<Callback_mouse_k>(callback_mouse_down.func);
+                (callback_mouse_down.obj->*callback)(event.button.x, event.button.y, event.button.button);
             }
         }
-            break;
+        break;
         case SDL_MOUSEBUTTONUP:
-            for (auto obj : gameObjects)
-                obj->OnMouseUp(event.button.x, event.button.y, event.button.button);
-            if (mouseUpCallback.func) {
-                MouseKeyCallback callback = reinterpret_cast<MouseKeyCallback>(mouseUpCallback.func);
-                (mouseUpCallback.obj->*callback)(event.button.x, event.button.y, event.button.button);
+            for (auto obj : game_objects)
+                obj->On_mouse_up(event.button.x, event.button.y, event.button.button);
+            if (callback_mouse_up.func) {
+                Callback_mouse_k callback = reinterpret_cast<Callback_mouse_k>(callback_mouse_up.func);
+                (callback_mouse_up.obj->*callback)(event.button.x, event.button.y, event.button.button);
             }
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                MouseMoveCallback callback = reinterpret_cast<MouseMoveCallback>(windowResizeCallback.func);
-                (windowResizeCallback.obj->*callback)(event.window.data1, event.window.data2);
+                if (callback_window_resize.func) {
+                    Callback_window callback = reinterpret_cast<Callback_window>(callback_window_resize.func);
+                    (callback_window_resize.obj->*callback)(event.window.data1, event.window.data2);
+                }
             }
             break;
         }
     }
 }
 
-void engine::UpdatePhysics(int delta)
+void Engine::Update_physics(int delta)
 {
-    phyAccum += delta;
-    needUpdate = false;
-    while (phyAccum >= phyStep) {
-        phyWorld.Step(phyHz, phyVelIters, phyPosIters);
-        phyAccum -= phyStep;
-        needUpdate = true;
+    if (phy_pause) {
+        phy_accum   = 0;
+        phy_updated = false;
+        return;
+    }
+    phy_accum  += delta;
+    phy_updated = phy_accum >= phy_step;
+
+    while (phy_accum >= phy_step) {
+        phy_world.Step(phy_hz, phy_vel_iters, phy_pos_iters);
+        phy_accum -= phy_step;
     }
 }
 
-SupportRectangle* engine::CreateSupportRectangle()
-{
-    SupportRectangle* res = new SupportRectangle();
-    gameObjects.push_back(res);
-    return res;
-}
-
-int engine::GetSurfaceWidth()
+int Engine::Get_surface_width()
 {
     int dw, dh;
     SDL_GL_GetDrawableSize(window, &dw, &dh);
     return dw;
 }
 
-int engine::GetSurfaceHeight()
+int Engine::Get_surface_height()
 {
     int dw, dh;
     SDL_GL_GetDrawableSize(window, &dw, &dh);
     return dh;
 }
 
-Texture* engine::LoadTexture(const char* filename)
+Texture* Engine::Load_texture(const char* filename)
 {
     Texture* texture = new Texture();
     if (!texture->Load(filename)) {
         delete texture;
-        texture = &emptyTexture;
+        texture = &empty_texture;
     }
     else
         textures.push_back(texture);
     return texture;
 }
 
-bool engine::SetGUIFont(const char * filename, float size)
+bool Engine::Set_gui_font(const char * filename, float size)
 {
     ImGuiIO& io = ImGui::GetIO();
     ImFont* font = io.Fonts->AddFontFromFileTTF(filename, size, NULL, io.Fonts->GetGlyphRangesCyrillic());
@@ -247,40 +243,37 @@ bool engine::SetGUIFont(const char * filename, float size)
     return font->IsLoaded();
 }
 
-b2Body* engine::CreateBody(b2BodyDef* def)
+b2Body* Engine::Create_body(const b2BodyDef& def)
 {
-    return phyWorld.CreateBody(def);
+    return phy_world.CreateBody(&def);
 }
 
-void engine::DeleteBody(b2Body* body)
+void Engine::Delete_body(b2Body* body)
 {
-    phyWorld.DestroyBody(body);
+    phy_world.DestroyBody(body);
 }
 
-void engine::AddGameObject(GameObject * obj)
+void Engine::Add_game_object(Game_object* obj)
 {
-    gameObjects.push_back(obj);
+    game_objects.insert(game_objects.begin(), obj);
 }
 
-void engine::PausePhysics()
+void Engine::Pause_physics()
 {
-    phyPause = true;
-    
+    phy_pause   = true;
+    phy_updated = false;
 }
 
-void engine::StartPhysics()
+void Engine::Start_physics()
 {
-    phyAccum = 0;
-    last = SDL_GetTicks();
-    phyPause = false;
+    phy_accum   = 0;
+    phy_updated = false;
+    last        = SDL_GetTicks();
+    phy_pause   = false;
 }
 
-void engine::SelectObject(GameObject * obj)
+void Engine::Select_object(Game_object* obj)
 {
-    for (auto it : gameObjects)
-        if (it == obj) {
-            it->selected = true;
-        }
-        else
-            it->selected = false;
+    for (auto it : game_objects)
+       it->selected = (it == obj);
 }
