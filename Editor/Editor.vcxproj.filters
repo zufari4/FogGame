@@ -19,10 +19,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\phy_box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\phy_box.cpp">
+    <ClCompile Include="src\editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,16 +16,16 @@ private:
     Texture* texture_btn_pause;
     int      surf_width;
     int      surf_height;
+    b2Body*  ground_body;
 public:
-    Editor() {};
+    Editor();
     bool Init();
     void Run();
     void Loop(Uint32);
-    void On_mouse_down(int x, int y, int button);
-    void On_mouse_up(int x, int y, int button);
-    void On_mouse_move(int x, int y);
     void On_window_resize(int w, int h);
     void Draw_gui();
     void Button_phy_box_click();
     void Button_phy_run_click();
+private:
+    void Update_phy_wall(int w, int h);
 };

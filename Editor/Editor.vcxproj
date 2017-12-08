@@ -23,7 +23,7 @@
     <ClInclude Include="src\phy_box.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\editor.cpp" />
     <ClCompile Include="src\phy_box.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -109,7 +109,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2Dd.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dd.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui_d.lib;engine_d.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x86</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>
@@ -157,7 +157,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;Box2Dr.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui.lib;engine.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Box2Dr.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui_r.lib;engine_r.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x86</AdditionalLibraryDirectories>
     </Link>
     <BuildLog>
