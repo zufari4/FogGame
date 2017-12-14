@@ -3,8 +3,6 @@
 #include <Box2D/Box2D.h>
 #include "game_object.h"
 
-#define POINT_SIZE 20.0f
-
 class Support_rectangle: public Game_object
 {
 public:

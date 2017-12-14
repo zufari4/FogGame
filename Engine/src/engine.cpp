@@ -159,6 +159,8 @@ void Engine::Parse_events()
                     Select_object(obj);
                     break;
                 }
+                else
+                    obj->selected = false;
             }
             for (auto obj : game_objects) {
                 obj->On_mouse_down(event.button.x, event.button.y, event.button.button);

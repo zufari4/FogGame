@@ -6,6 +6,8 @@
 #include "base_class.h"
 
 typedef b2Vec2 vec2;
+#define POINT_SIZE 10.0f
+#define CIRCLE_STEP 4
 
 class Game_object: public Base_class
 {
