@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClInclude Include="src\editor.h" />
     <ClInclude Include="src\phy_box.h" />
+    <ClInclude Include="src\phy_circle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\editor.cpp" />
     <ClCompile Include="src\phy_box.cpp" />
+    <ClCompile Include="src\phy_circle.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3C85B149-5153-468C-A5BE-0CE0FE1118ED}</ProjectGuid>

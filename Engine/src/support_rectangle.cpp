@@ -6,6 +6,7 @@ Support_rectangle::Support_rectangle():
     a(b2Vec2_zero), b(b2Vec2_zero),
     c(b2Vec2_zero), d(b2Vec2_zero), sqared(true)
 {
+    Set_rect(vec2(0.0f, 0.0f), vec2(10.0f,10.0f));
 }
 
 void Support_rectangle::Set_rect(const vec2& _min, const vec2& _max)
@@ -33,7 +34,7 @@ void Support_rectangle::Draw()
     else
         glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 
-    glLineWidth(4.0f);
+    glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
     glVertex2f(a.x, a.y);
     glVertex2f(b.x, b.y);

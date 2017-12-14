@@ -23,12 +23,14 @@
     <ClInclude Include="src\engine.h" />
     <ClInclude Include="src\game_object.h" />
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\support_circle.h" />
     <ClInclude Include="src\support_rectangle.h" />
     <ClInclude Include="src\texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\support_circle.cpp" />
     <ClCompile Include="src\support_rectangle.cpp" />
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
