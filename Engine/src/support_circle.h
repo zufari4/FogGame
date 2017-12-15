@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <Box2D/Box2D.h>
 #include "game_object.h"
 
@@ -8,7 +7,6 @@
 class Support_circle : public Game_object
 {
 private:
-    std::vector<vec2> vertexes;
     float radius;
 public:
     Support_circle();

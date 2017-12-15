@@ -4,7 +4,7 @@ Support_circle::Support_circle():
     Game_object(),
     radius(40)
 {
-    Get_circle_vertexes(pos.x, pos.x, radius, CIRCLE_STEP, vertexes);
+    Get_circle_vertexes(pos.x, pos.x, radius, CIRCLE_STEP, vertices);
 }
 
 void Support_circle::Draw()
@@ -16,7 +16,7 @@ void Support_circle::Draw()
         glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
     glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
-    for (auto v : vertexes)
+    for (auto v : vertices)
         glVertex2f(v.x, v.y);
     glEnd();
     //Center
@@ -35,7 +35,7 @@ bool Support_circle::Cursor_enter(const vec2& cursor)
 void Support_circle::Set_radius(float val)
 {
     radius = val;
-    Get_circle_vertexes(pos.x, pos.x, radius, CIRCLE_STEP, vertexes);
+    Get_circle_vertexes(pos.x, pos.x, radius, CIRCLE_STEP, vertices);
     On_changed();
 }
 
@@ -47,7 +47,7 @@ float Support_circle::Get_radius()
 void Support_circle::Move(const vec2& delta)
 {
     pos += delta;
-    for (auto& v : vertexes)
+    for (auto& v : vertices)
         v += delta;
 }
 

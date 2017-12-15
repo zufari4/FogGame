@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <Box2D/Box2D.h>
@@ -17,11 +18,13 @@ public:
 protected:
     vec2  pos;
     float angle;
+    std::vector<vec2> vertices;
 public:
     Game_object();
     virtual ~Game_object() {};
     virtual void Hide() { visible = false; };
     virtual void Show() { visible = true;  };
+    virtual void Set_pos(const vec2& newpos) { pos = newpos; }
     virtual vec2 Get_pos() { return pos; };
     virtual void Draw() {};
     virtual void Update(Uint32 ticks) {};
