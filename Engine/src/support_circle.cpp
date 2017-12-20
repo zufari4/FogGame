@@ -1,7 +1,7 @@
 #include "support_circle.h"
 
 Support_circle::Support_circle():
-    Game_object(),
+    Support_object(),
     radius(40)
 {
     Get_circle_vertexes(pos.x, pos.x, radius, CIRCLE_STEP, vertices);
@@ -10,15 +10,9 @@ Support_circle::Support_circle():
 void Support_circle::Draw()
 {
     //Circle
-    if (selected)
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    else
-        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-    glLineWidth(2.0f);
-    glBegin(GL_LINE_LOOP);
-    for (auto v : vertices)
-        glVertex2f(v.x, v.y);
-    glEnd();
+    if (selected) glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    else  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+    Draw_shape();
     //Center
     glPointSize(POINT_SIZE / 2.0f);
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
@@ -42,19 +36,6 @@ void Support_circle::Set_radius(float val)
 float Support_circle::Get_radius()
 {
     return radius;
-}
-
-void Support_circle::Move(const vec2& delta)
-{
-    pos += delta;
-    for (auto& v : vertices)
-        v += delta;
-}
-
-void Support_circle::Set_pos(const vec2& p)
-{
-    Move(p - pos);
-    On_changed();
 }
 
 void Support_circle::Get_circle_vertexes(float cx, float cy, float r, int pix_on_step, std::vector<vec2>& out)

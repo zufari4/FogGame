@@ -9,6 +9,7 @@
 typedef b2Vec2 vec2;
 #define POINT_SIZE 10.0f
 #define CIRCLE_STEP 4
+#define LINE_WIDTH 2.0f
 
 class Game_object: public Base_class
 {
@@ -18,7 +19,6 @@ public:
 protected:
     vec2  pos;
     float angle;
-    std::vector<vec2> vertices;
 public:
     Game_object();
     virtual ~Game_object() {};

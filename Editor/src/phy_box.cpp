@@ -31,10 +31,10 @@ void Phy_box::On_changed()
     vec2 chanVert[4];
     vec2  v;
    
-    v = a - pos;  chanVert[0] = vec2(p2m(v.x), p2m(v.y));
-    v = b - pos;  chanVert[1] = vec2(p2m(v.x), p2m(v.y));
-    v = c - pos;  chanVert[2] = vec2(p2m(v.x), p2m(v.y));
-    v = d - pos;  chanVert[3] = vec2(p2m(v.x), p2m(v.y));
+    v = vertices[0] - pos;  chanVert[0] = vec2(p2m(v.x), p2m(v.y));
+    v = vertices[1] - pos;  chanVert[1] = vec2(p2m(v.x), p2m(v.y));
+    v = vertices[2] - pos;  chanVert[2] = vec2(p2m(v.x), p2m(v.y));
+    v = vertices[3] - pos;  chanVert[3] = vec2(p2m(v.x), p2m(v.y));
    
     shape.Set(chanVert, 4);
     b2FixtureDef fixture_def;
@@ -56,12 +56,7 @@ void Phy_box::Update(Uint32 ticks)
     vec2 delta  = phy_scale * (newpos - oldp);
     oldp = newpos;
     float newangle = body->GetAngle();
-
-    a += delta;
-    b += delta;
-    c += delta;
-    d += delta;
-    pos += delta;
+    Move(delta);
     Rotate(newangle - angle);
     angle = newangle;
 }
