@@ -2,7 +2,7 @@
 #include "engine.h"
 
 Support_rectangle::Support_rectangle():
-    Support_object(), selected_vertex(-1), drag_point(false), drag_rect(false), sqared(true)
+    Support_object(), selected_vertex(-1), sqared(true), drag_point(false)
 {
     vertices.resize(4);
     Set_rect(vec2(0.0f, 0.0f), vec2(10.0f,10.0f));
@@ -18,7 +18,6 @@ void Support_rectangle::Set_rect(const vec2& _min, const vec2& _max)
         vertices[0] = _min;
         vertices[2] = _max;
     }
-
     vertices[1] = vec2(vertices[2].x, vertices[0].y);
     vertices[3] = vec2(vertices[0].x, vertices[2].y);
     pos = Calc_center();
@@ -57,15 +56,12 @@ void Support_rectangle::Draw()
 
 void Support_rectangle::On_mouse_move(int x, int y)
 {
-    if (!visible || !selected) return;
+    Support_object::On_mouse_move(x, y);
+    if (!visible || !selected || is_drag) return;
 
     vec2 cursor((float)x, (float)y);
-    if (drag_rect) {
-        vec2 delta = cursor - drag_start;
-        drag_start = cursor;
-        Move(delta);
-    }
-    else if (drag_point) {
+
+    if (drag_point) {
         switch (selected_vertex)
         {
         case 0: vertices[0] = cursor; if (sqared) { vertices[3].x = vertices[0].x; vertices[1].y = vertices[0].y; } break;
@@ -88,23 +84,22 @@ void Support_rectangle::On_mouse_down(int x, int y, int b)
 
     if (selected_vertex != -1) {
         drag_point = true;
-        drag_rect  = false;
+        is_drag = false;
     }
-    else if (Point_in_shape(vec2((float)x, (float)y))) {
-        drag_rect  = true;
+    else {
         drag_point = false;
-        drag_start = vec2((float)x, (float)y);
+        Support_object::On_mouse_down(x, y, b);
     }
 }
 
 void Support_rectangle::On_mouse_up(int x, int y, int b)
 {
-    if (!visible || !selected) return;
-
-    if (drag_point || drag_rect)
+    if (drag_point) {
+        drag_point = false;
         On_changed();
-    drag_point = false;
-    drag_rect  = false;
+    }
+    else
+        Support_object::On_mouse_up(x, y, b);
 }
 
 bool Support_rectangle::In_point(const vec2& point, const vec2& cursor)

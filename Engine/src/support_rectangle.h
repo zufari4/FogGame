@@ -9,8 +9,6 @@ public:
 protected:
     int  selected_vertex;
     bool drag_point;
-    bool drag_rect;
-    vec2 drag_start;
 public:
     Support_rectangle();
     void Draw();
@@ -20,7 +18,6 @@ private:
     virtual void On_mouse_move(int x, int y);
     virtual void On_mouse_down(int x, int y, int b);
     virtual void On_mouse_up(int x, int y, int b);
-    virtual void On_changed() {};
     bool In_point(const vec2& point, const vec2& cursor);
     vec2 Calc_center();    
 };

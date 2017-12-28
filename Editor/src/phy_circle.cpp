@@ -11,6 +11,7 @@ Phy_circle::Phy_circle():
     oldp = vec2(p2m(pos.x), p2m(pos.y));
     body_def.position = oldp;
     body = engine.Create_body(body_def);
+    Set_radius(20.0);
 }
 
 void Phy_circle::Update(Uint32)
