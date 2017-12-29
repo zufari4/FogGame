@@ -28,10 +28,10 @@ void Phy_circle::Update(Uint32)
     vec2 newpos = body->GetPosition();
     vec2 delta  = phy_scale * (newpos - oldp);
     oldp = newpos;
-    angle = body->GetAngle();
+    float newangle = body->GetAngle();
     support_object->Move(delta);
-    //support_circle->Rotate(newangle - angle);
-    //angle = newangle;
+    support_object->Rotate(newangle - angle);
+    angle = newangle;
 }
 
 void Phy_circle::On_changed()

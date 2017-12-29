@@ -4,7 +4,7 @@ Support_line::Support_line():
     Support_object(), selected_vertex(-1), drag_point(false)
 {
     vertices.resize(2);
-    Set_line(vec2(0.0f, 0.0f), vec2(10.0f, 0.0f));
+    Set_line(vec2(0.0f, 0.0f), vec2(100.0f, 0.0f));
 }
 
 void Support_line::Draw()

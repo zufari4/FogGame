@@ -5,7 +5,7 @@ Support_rectangle::Support_rectangle():
     Support_object(), selected_vertex(-1), sqared(true), drag_point(false)
 {
     vertices.resize(4);
-    Set_rect(vec2(0.0f, 0.0f), vec2(10.0f,10.0f));
+    Set_rect(vec2(0.0f, 0.0f), vec2(100.0f,100.0f));
 }
 
 void Support_rectangle::Set_rect(const vec2& _min, const vec2& _max)

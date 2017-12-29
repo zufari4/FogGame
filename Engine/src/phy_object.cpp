@@ -70,3 +70,25 @@ bool Phy_body_object::TestPoint(const vec2& p)
 {
     return fixture->TestPoint(p2mv(p));
 }
+
+void Phy_body_object::Set_pos(const vec2& newpos)
+{
+    Phy_object::Set_pos(newpos);
+    Update_body();
+}
+
+void Phy_body_object::Move(const vec2& delta)
+{
+    Phy_object::Move(delta);
+    Update_body();
+}
+
+void Phy_body_object::Rotate(float delta_rad)
+{
+    Phy_object::Rotate(delta_rad);
+    Update_body();
+}
+
+void Phy_body_object::Update_body()
+{
+}

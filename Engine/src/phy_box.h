@@ -12,8 +12,8 @@ public:
     void On_changed();
     void Update(Uint32);
     void Set_rect(const vec2& _min, const vec2& _max);
+protected:
+    void Update_body();
 private:
     vec2    oldp;
-private:
-    void Update_body();
 };

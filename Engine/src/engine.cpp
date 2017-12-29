@@ -108,9 +108,6 @@ void Engine::Run()
     while (!done)
     {
         Parse_events();
-
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplSdlGL2_NewFrame(window);
         
         now   = SDL_GetTicks();
         delta = (now - last);
@@ -118,7 +115,10 @@ void Engine::Run()
         if (delta > 160) delta = 160;
         Update_physics(delta);
 
-        for (auto it : game_objects) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplSdlGL2_NewFrame(window);
+
+        for (const auto& it : game_objects) {
             if (phy_updated)
                 it->Update(now);
             if (it->visible)
@@ -132,6 +132,8 @@ void Engine::Run()
         SDL_GL_SwapWindow(window);
     }
 }
+
+
 
 void Engine::Parse_events()
 {

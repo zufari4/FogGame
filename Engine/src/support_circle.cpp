@@ -41,7 +41,7 @@ float Support_circle::Get_radius()
 void Support_circle::Get_circle_vertexes(float cx, float cy, float r, int pix_on_step, std::vector<vec2>& out)
 {
     out.clear();
-    int num_segments = int(3.14159265f * 2.0f * r / float(pix_on_step));
+    int num_segments = pix_on_step;
     float theta = 3.14159265f * 2.0f / float(num_segments);
     float c = cosf(theta);//precalculate the sine and cosine
     float s = sinf(theta);

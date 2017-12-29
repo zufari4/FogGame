@@ -12,7 +12,7 @@ public:
     void Update(Uint32);
 private:
     vec2    oldp;
-private:
+protected:
     void On_changed();
     void Update_body();
 };
