@@ -292,7 +292,7 @@ b2Body* Engine::Get_body_at_point(const vec2& p)
     for (const auto& obj : game_objects) {
         if (obj->Get_type() == otPhysicBody) {
             Phy_body_object* body_obj = static_cast<Phy_body_object*>(obj);
-            if (body_obj->Get_fixture()->TestPoint(p)) {
+            if (body_obj->TestPoint(p)) {
                 return body_obj->Get_body();
             }
         }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Box2D/Box2D.h>
+#include "engine.h"
 #include "game_object.h"
 #include "support_object.h"
 
@@ -28,4 +29,6 @@ public:
     Phy_body_object();
     b2Body* Get_body();
     b2Fixture* Get_fixture();
+    b2Shape* Get_shape();
+    bool TestPoint(const vec2& p);
 };

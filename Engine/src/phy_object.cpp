@@ -60,3 +60,13 @@ b2Fixture* Phy_body_object::Get_fixture()
 {
     return fixture;
 }
+
+b2Shape* Phy_body_object::Get_shape()
+{
+    return shape;
+}
+
+bool Phy_body_object::TestPoint(const vec2& p)
+{
+    return fixture->TestPoint(p2mv(p));
+}

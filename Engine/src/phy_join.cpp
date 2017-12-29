@@ -43,9 +43,9 @@ void Phy_join::Update_body()
     b2Body* body1 = engine.Get_body_at_point(support_object->Get_vertex(0));
     b2Body* body2 = engine.Get_body_at_point(support_object->Get_vertex(1));
 
-    if (body1 != nullptr && body2 != nullptr) {
+    if (body1 != nullptr && body2 != nullptr && body1 != body2) {
         b2DistanceJointDef jointDef;
-        jointDef.Initialize(body1, body2, p2mv(vertices[0]), p2mv(vertices[1]));
+        jointDef.Initialize(body1, body2, p2mv(support_object->Get_vertex(0)), p2mv(support_object->Get_vertex(1)));
         jointDef.collideConnected = true;
         jointDef.frequencyHz = 4.0f;
         jointDef.dampingRatio = 0.5f;
