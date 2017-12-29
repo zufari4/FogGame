@@ -4,18 +4,19 @@
 #include "engine.h"
 
 float   phy_scale = 1.0f;
+float   phy_scale_inv = 1.0f;
 
 Engine::Engine():
     phy_world(vec2(0.0f,10.0f)),
     init(false),
     window(NULL),
     gl_context(NULL),
-    phy_pause(false)
+    phy_pause(false),
+    callback_frame(nullptr),
+    callback_mouse_down(nullptr),
+    callback_mouse_up(nullptr),
+    callback_mouse_move(nullptr)
 {
-    callback_frame.func      = NULL;
-    callback_mouse_down.func = NULL;
-    callback_mouse_up.func   = NULL;
-    callback_mouse_move.func = NULL;
 }
 
 Engine::~Engine()
@@ -69,6 +70,7 @@ bool Engine::Init(const char* title, int width, int height, int exflags)
 bool Engine::Init_physics(const vec2& gravity, float scale, int time_update, int vel_iters, int pos_iters)
 {
     phy_scale = scale;
+    phy_scale_inv = 1.0f / scale;
     phy_step  = time_update;
     phy_vel_iters = vel_iters;
     phy_pos_iters = pos_iters;
@@ -102,7 +104,6 @@ void Engine::Run()
     last = SDL_GetTicks();
     phy_accum   = 0;
     phy_updated = false;
-    Callback_frame callback = reinterpret_cast<Callback_frame>(callback_frame.func);
 
     while (!done)
     {
@@ -124,8 +125,8 @@ void Engine::Run()
                 it->Draw();
         }
 
-        if (callback)
-            (callback_frame.obj->*callback)(now);
+        if (callback_frame)
+            callback_frame(now);
 
         ImGui::Render();
         SDL_GL_SwapWindow(window);
@@ -144,17 +145,16 @@ void Engine::Parse_events()
             done = true;
             break;
         case SDL_MOUSEMOTION:
-            for (auto obj : game_objects)
+            for (const auto& obj : game_objects)
                 obj->On_mouse_move(event.motion.x, event.motion.y);
-            if (callback_mouse_move.func) {
-                Callback_mouse_m callback = reinterpret_cast<Callback_mouse_m>(callback_mouse_move.func);
-                (callback_mouse_move.obj->*callback)(event.motion.x, event.motion.y);
+            if (callback_mouse_move) {
+                callback_mouse_move(event.motion.x, event.motion.y);
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
         {
             vec2 cursor((float)event.button.x, (float)event.button.y);
-            for (auto obj : game_objects) {
+            for (const auto& obj : game_objects) {
                 if (obj->Cursor_enter(cursor)) {
                     Select_object(obj);
                     break;
@@ -162,28 +162,25 @@ void Engine::Parse_events()
                 else
                     obj->selected = false;
             }
-            for (auto obj : game_objects) {
+            for (const auto& obj : game_objects) {
                 obj->On_mouse_down(event.button.x, event.button.y, event.button.button);
             }
-            if (callback_mouse_down.func) {
-                Callback_mouse_k callback = reinterpret_cast<Callback_mouse_k>(callback_mouse_down.func);
-                (callback_mouse_down.obj->*callback)(event.button.x, event.button.y, event.button.button);
+            if (callback_mouse_down) {
+                callback_mouse_down(event.button.x, event.button.y, event.button.button);
             }
         }
         break;
         case SDL_MOUSEBUTTONUP:
-            for (auto obj : game_objects)
+            for (const auto& obj : game_objects)
                 obj->On_mouse_up(event.button.x, event.button.y, event.button.button);
-            if (callback_mouse_up.func) {
-                Callback_mouse_k callback = reinterpret_cast<Callback_mouse_k>(callback_mouse_up.func);
-                (callback_mouse_up.obj->*callback)(event.button.x, event.button.y, event.button.button);
+            if (callback_mouse_up) {
+                callback_mouse_up(event.button.x, event.button.y, event.button.button);
             }
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                if (callback_window_resize.func) {
-                    Callback_window callback = reinterpret_cast<Callback_window>(callback_window_resize.func);
-                    (callback_window_resize.obj->*callback)(event.window.data1, event.window.data2);
+                if (callback_window_resize) {
+                    callback_window_resize(event.window.data1, event.window.data2);
                 }
             }
             break;
@@ -255,6 +252,16 @@ void Engine::Delete_body(b2Body* body)
     phy_world.DestroyBody(body);
 }
 
+b2Joint* Engine::Create_joint(b2JointDef* def)
+{
+    return phy_world.CreateJoint(def);
+}
+
+void Engine::Delete_join(b2Joint* j)
+{
+    phy_world.DestroyJoint(j);
+}
+
 void Engine::Add_game_object(Game_object* obj)
 {
     game_objects.insert(game_objects.begin(), obj);
@@ -276,6 +283,19 @@ void Engine::Start_physics()
 
 void Engine::Select_object(Game_object* obj)
 {
-    for (auto it : game_objects)
+    for (auto& it : game_objects)
        it->selected = (it == obj);
+}
+
+b2Body* Engine::Get_body_at_point(const vec2& p)
+{
+    for (const auto& obj : game_objects) {
+        if (obj->Get_type() == otPhysicBody) {
+            Phy_body_object* body_obj = static_cast<Phy_body_object*>(obj);
+            if (body_obj->Get_fixture()->TestPoint(p)) {
+                return body_obj->Get_body();
+            }
+        }
+    }
+    return nullptr;
 }

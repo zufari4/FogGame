@@ -22,8 +22,13 @@
     <ClInclude Include="src\base_class.h" />
     <ClInclude Include="src\engine.h" />
     <ClInclude Include="src\game_object.h" />
+    <ClInclude Include="src\phy_box.h" />
+    <ClInclude Include="src\phy_circle.h" />
+    <ClInclude Include="src\phy_join.h" />
+    <ClInclude Include="src\phy_object.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\support_circle.h" />
+    <ClInclude Include="src\support_line.h" />
     <ClInclude Include="src\support_object.h" />
     <ClInclude Include="src\support_rectangle.h" />
     <ClInclude Include="src\texture.h" />
@@ -31,7 +36,12 @@
   <ItemGroup>
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\phy_box.cpp" />
+    <ClCompile Include="src\phy_circle.cpp" />
+    <ClCompile Include="src\phy_join.cpp" />
+    <ClCompile Include="src\phy_object.cpp" />
     <ClCompile Include="src\support_circle.cpp" />
+    <ClCompile Include="src\support_line.cpp" />
     <ClCompile Include="src\support_object.cpp" />
     <ClCompile Include="src\support_rectangle.cpp" />
     <ClCompile Include="src\texture.cpp" />

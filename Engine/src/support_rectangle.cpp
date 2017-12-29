@@ -32,18 +32,23 @@ void Support_rectangle::Draw()
     if (selected) {
         glPointSize(POINT_SIZE);
         glBegin(GL_POINTS);
+
         if (selected_vertex == 0) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
         else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
         glVertex2f(vertices[0].x, vertices[0].y);
+
         if (selected_vertex == 1) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
         else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
         glVertex2f(vertices[1].x, vertices[1].y);
+
         if (selected_vertex == 2) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
         else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
         glVertex2f(vertices[2].x, vertices[2].y);
+
         if (selected_vertex == 3) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
         else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
         glVertex2f(vertices[3].x, vertices[3].y);
+
         glEnd();
     }
     //Center
@@ -71,10 +76,10 @@ void Support_rectangle::On_mouse_move(int x, int y)
         }
         pos = Calc_center();
     }
-    else if (In_point(vertices[0], cursor)) selected_vertex = 0;
-    else if (In_point(vertices[1], cursor)) selected_vertex = 1;
-    else if (In_point(vertices[2], cursor)) selected_vertex = 2;
-    else if (In_point(vertices[3], cursor)) selected_vertex = 3;
+    else if (Point_in_vertex(vertices[0], cursor)) selected_vertex = 0;
+    else if (Point_in_vertex(vertices[1], cursor)) selected_vertex = 1;
+    else if (Point_in_vertex(vertices[2], cursor)) selected_vertex = 2;
+    else if (Point_in_vertex(vertices[3], cursor)) selected_vertex = 3;
     else selected_vertex = -1;
 }
 
@@ -102,19 +107,12 @@ void Support_rectangle::On_mouse_up(int x, int y, int b)
         Support_object::On_mouse_up(x, y, b);
 }
 
-bool Support_rectangle::In_point(const vec2& point, const vec2& cursor)
-{
-    vec2  d = point - cursor;
-    float r = POINT_SIZE / 2.0f;
-    return d.LengthSquared() < r*r;
-}
-
 vec2 Support_rectangle::Calc_center()
 {
-    vec2 p1 = vertices[0] + vertices[1]; p1 *= 0.5f;
-    vec2 p2 = vertices[3] + vertices[2]; p2 *= 0.5f;
-    vec2 p3 = vertices[0] + vertices[3]; p3 *= 0.5f;
-    vec2 p4 = vertices[1] + vertices[2]; p4 *= 0.5f;
+    vec2 p1 = 0.5f * (vertices[0] + vertices[1]);
+    vec2 p2 = 0.5f * (vertices[3] + vertices[2]);
+    vec2 p3 = 0.5f * (vertices[0] + vertices[3]);
+    vec2 p4 = 0.5f * (vertices[1] + vertices[2]);
 
     // Store the values for fast access and easy
     // equations-to-code conversion
@@ -143,10 +141,10 @@ vec2 Support_rectangle::Calc_center()
 bool Support_rectangle::Cursor_enter(const vec2& cursor)
 {
     if (Point_in_shape(cursor)) return true;
-    else if (In_point(vertices[0], cursor)) return true;
-    else if (In_point(vertices[1], cursor)) return true;
-    else if (In_point(vertices[2], cursor)) return true;
-    else if (In_point(vertices[3], cursor)) return true;
+    else if (Point_in_vertex(vertices[0], cursor)) return true;
+    else if (Point_in_vertex(vertices[1], cursor)) return true;
+    else if (Point_in_vertex(vertices[2], cursor)) return true;
+    else if (Point_in_vertex(vertices[3], cursor)) return true;
     else return false;
 }
 

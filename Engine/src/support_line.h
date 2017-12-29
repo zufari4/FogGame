@@ -2,22 +2,20 @@
 
 #include "support_object.h"
 
-class Support_rectangle: public Support_object
+class Support_line : public Support_object
 {
 public:
-    bool sqared;
+    Support_line();
+    void  Draw();
+    bool  Cursor_enter(const vec2& cursor);
+    void  Set_line(const vec2& a, const vec2& b, bool notify = true);
 protected:
     int  selected_vertex;
     bool drag_point;
-public:
-    Support_rectangle();
-    void Draw();
-    virtual void Set_rect(const vec2& _min, const vec2& _max);
-    virtual bool Cursor_enter(const vec2& cursor);
+protected:
+    bool Point_on_line(const vec2& point);
 private:
     virtual void On_mouse_move(int x, int y);
     virtual void On_mouse_down(int x, int y, int b);
     virtual void On_mouse_up(int x, int y, int b);
-    vec2 Calc_center();    
 };
-

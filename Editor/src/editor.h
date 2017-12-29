@@ -7,6 +7,7 @@
 #include "base_class.h"
 #include "phy_box.h"
 #include "phy_circle.h"
+#include "phy_join.h"
 
 class Editor: public Base_class
 {
@@ -29,6 +30,7 @@ public:
     void Button_phy_box_click();
     void Button_phy_run_click();
     void Button_phy_circle_click();
+    void Button_phy_join_click();
 private:
     void Update_phy_wall(float w, float h);
 };
