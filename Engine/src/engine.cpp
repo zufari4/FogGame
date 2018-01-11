@@ -133,8 +133,6 @@ void Engine::Run()
     }
 }
 
-
-
 void Engine::Parse_events()
 {
     static SDL_Event event;
@@ -144,7 +142,7 @@ void Engine::Parse_events()
         ImGui_ImplSdlGL2_ProcessEvent(&event);
         switch (event.type) {
         case SDL_QUIT:
-            done = true;
+            Stop();
             break;
         case SDL_MOUSEMOTION:
             for (const auto& obj : game_objects)
@@ -300,4 +298,25 @@ b2Body* Engine::Get_body_at_point(const vec2& p)
         }
     }
     return nullptr;
+}
+
+void Engine::Stop()
+{
+    done = true;
+}
+
+float Engine::Get_main_menu_height()
+{
+    return ImGui::GetStyle().FramePadding.y * 2 + ImGui::GetFontSize();
+}
+
+float Engine::Get_dpi()
+{
+    int i = SDL_GetWindowDisplayIndex(window);
+    if (i < 0)
+        return 96;
+    float dpi;
+    if (SDL_GetDisplayDPI(i, &dpi, nullptr, nullptr) != 0)
+        dpi = 96;
+    return dpi;
 }

@@ -31,6 +31,7 @@ public:
     void Button_phy_run_click();
     void Button_phy_circle_click();
     void Button_phy_join_click();
+    void Exit_click();
 private:
     void Update_phy_wall(float w, float h);
 };
