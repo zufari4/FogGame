@@ -39,27 +39,27 @@ bool Support_object::Point_in_vertex(const vec2& vertex, const vec2& point)
     return d.LengthSquared() < r*r;
 }
 
-void Support_object::On_mouse_move(int x, int y)
+void Support_object::On_mouse_move(float x, float y)
 {
     if (!visible || !selected) return;
 
     if (is_drag) {
-        vec2 cursor((float)x, (float)y);
+        vec2 cursor(x, y);
         vec2 delta = cursor - drag_start;
         drag_start = cursor;
         Move(delta);
     }
 }
 
-void Support_object::On_mouse_down(int x, int y, int b)
+void Support_object::On_mouse_down(float x, float y, int b)
 {
     if (!visible || !selected) return;
 
     is_drag = true;
-    drag_start = vec2((float)x, (float)y);
+    drag_start = vec2(x, y);
 }
 
-void Support_object::On_mouse_up(int x, int y, int b)
+void Support_object::On_mouse_up(float x, float y, int b)
 {
     if (is_drag) {
         is_drag = false;

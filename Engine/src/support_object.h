@@ -25,9 +25,9 @@ protected:
 
     virtual bool Point_in_shape(const vec2& p);
     bool Point_in_vertex(const vec2& vertex, const vec2& point);
-    virtual void On_mouse_move(int x, int y);
-    virtual void On_mouse_down(int x, int y, int b);
-    virtual void On_mouse_up(int x, int y, int b);
+    virtual void On_mouse_move(float x, float y);
+    virtual void On_mouse_down(float x, float y, int b);
+    virtual void On_mouse_up(float x, float y, int b);
     void Draw_shape();
     void On_changed();
 private:

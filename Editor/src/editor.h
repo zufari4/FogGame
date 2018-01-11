@@ -25,7 +25,7 @@ public:
     bool Init();
     void Run();
     void Loop(Uint32);
-    void On_window_resize(int w, int h);
+    void On_window_resize(float w, float h);
     void Draw_gui();
     void Button_phy_box_click();
     void Button_phy_run_click();

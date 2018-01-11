@@ -37,9 +37,9 @@ public:
     virtual void Draw() {};
     virtual void Update(Uint32 ticks) {};
     virtual bool Cursor_enter(const vec2& /*cursor*/) { return false; };
-    virtual void On_mouse_move(int, int) {};
-    virtual void On_mouse_down(int, int, int) {};
-    virtual void On_mouse_up(int, int, int) {};
+    virtual void On_mouse_move(float, float) {};
+    virtual void On_mouse_down(float, float, int) {};
+    virtual void On_mouse_up(float, float, int) {};
     virtual vec2 Get_vertex(int idx);
     Object_type  Get_type() { return type; };
     float Get_angle();

@@ -146,9 +146,9 @@ void Engine::Parse_events()
             break;
         case SDL_MOUSEMOTION:
             for (const auto& obj : game_objects)
-                obj->On_mouse_move(event.motion.x, event.motion.y);
+                obj->On_mouse_move((float)event.motion.x, (float)event.motion.y);
             if (callback_mouse_move) {
-                callback_mouse_move(event.motion.x, event.motion.y);
+                callback_mouse_move((float)event.motion.x, (float)event.motion.y);
             }
             break;
         case SDL_MOUSEBUTTONDOWN:
@@ -163,24 +163,24 @@ void Engine::Parse_events()
                     obj->selected = false;
             }
             for (const auto& obj : game_objects) {
-                obj->On_mouse_down(event.button.x, event.button.y, event.button.button);
+                obj->On_mouse_down((float)event.button.x, (float)event.button.y, event.button.button);
             }
             if (callback_mouse_down) {
-                callback_mouse_down(event.button.x, event.button.y, event.button.button);
+                callback_mouse_down((float)event.button.x, (float)event.button.y, event.button.button);
             }
         }
         break;
         case SDL_MOUSEBUTTONUP:
             for (const auto& obj : game_objects)
-                obj->On_mouse_up(event.button.x, event.button.y, event.button.button);
+                obj->On_mouse_up((float)event.button.x, (float)event.button.y, event.button.button);
             if (callback_mouse_up) {
-                callback_mouse_up(event.button.x, event.button.y, event.button.button);
+                callback_mouse_up((float)event.button.x, (float)event.button.y, event.button.button);
             }
             break;
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
                 if (callback_window_resize) {
-                    callback_window_resize(event.window.data1, event.window.data2);
+                    callback_window_resize((float)event.window.data1, (float)event.window.data2);
                 }
             }
             break;
@@ -204,18 +204,18 @@ void Engine::Update_physics(int delta)
     }
 }
 
-int Engine::Get_surface_width()
+float Engine::Get_surface_width()
 {
-    int dw, dh;
-    SDL_GL_GetDrawableSize(window, &dw, &dh);
-    return dw;
+    int dw;
+    SDL_GL_GetDrawableSize(window, &dw, nullptr);
+    return (float)dw;
 }
 
-int Engine::Get_surface_height()
+float Engine::Get_surface_height()
 {
-    int dw, dh;
-    SDL_GL_GetDrawableSize(window, &dw, &dh);
-    return dh;
+    int dh;
+    SDL_GL_GetDrawableSize(window, nullptr, &dh);
+    return (float)dh;
 }
 
 Texture* Engine::Load_texture(const char* filename)

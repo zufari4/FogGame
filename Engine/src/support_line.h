@@ -15,7 +15,7 @@ protected:
 protected:
     bool Point_on_line(const vec2& point);
 private:
-    virtual void On_mouse_move(int x, int y);
-    virtual void On_mouse_down(int x, int y, int b);
-    virtual void On_mouse_up(int x, int y, int b);
+    virtual void On_mouse_move(float x, float y);
+    virtual void On_mouse_down(float x, float y, int b);
+    virtual void On_mouse_up(float x, float y, int b);
 };

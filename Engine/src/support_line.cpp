@@ -53,12 +53,12 @@ void Support_line::Set_line(const vec2& a, const vec2& b, bool notify /*= true*/
         On_changed();
 }
 
-void Support_line::On_mouse_move(int x, int y)
+void Support_line::On_mouse_move(float x, float y)
 {
     Support_object::On_mouse_move(x, y);
     if (!visible || !selected || is_drag) return;
 
-    vec2 cursor((float)x, (float)y);
+    vec2 cursor(x, y);
 
     if (drag_point) {
         switch (selected_vertex)
@@ -73,7 +73,7 @@ void Support_line::On_mouse_move(int x, int y)
     else selected_vertex = -1;
 }
 
-void Support_line::On_mouse_down(int x, int y, int b)
+void Support_line::On_mouse_down(float x, float y, int b)
 {
     if (!visible || !selected) return;
 
@@ -87,7 +87,7 @@ void Support_line::On_mouse_down(int x, int y, int b)
     }
 }
 
-void Support_line::On_mouse_up(int x, int y, int b)
+void Support_line::On_mouse_up(float x, float y, int b)
 {
     if (drag_point) {
         drag_point = false;

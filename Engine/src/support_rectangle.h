@@ -15,9 +15,9 @@ public:
     virtual void Set_rect(const vec2& _min, const vec2& _max);
     virtual bool Cursor_enter(const vec2& cursor);
 private:
-    virtual void On_mouse_move(int x, int y);
-    virtual void On_mouse_down(int x, int y, int b);
-    virtual void On_mouse_up(int x, int y, int b);
+    virtual void On_mouse_move(float x, float y);
+    virtual void On_mouse_down(float x, float y, int b);
+    virtual void On_mouse_up(float x, float y, int b);
     vec2 Calc_center();    
 };
 
