@@ -5,7 +5,7 @@
 #include "game_object.h"
 #include "support_object.h"
 
-class Phy_object : public Game_object
+class Phy_object : public Draw_object
 {
 protected:
     Support_object* support_object;

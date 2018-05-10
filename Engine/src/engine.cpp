@@ -1,322 +1,360 @@
-#include <imgui.h>
-#include <imgui_impl_sdl.h>
-#include <imgui_freetype.h>
 #include "engine.h"
+#include "Gui.h"
 
-float   phy_scale = 1.0f;
-float   phy_scale_inv = 1.0f;
-
-Engine::Engine():
-    phy_world(vec2(0.0f,10.0f)),
-    init(false),
-    window(NULL),
-    gl_context(NULL),
-    phy_pause(false),
-    callback_frame(nullptr),
-    callback_mouse_down(nullptr),
-    callback_mouse_up(nullptr),
-    callback_mouse_move(nullptr)
+namespace Engine
 {
-}
+    b2World       phy_world_(b2Vec2_zero);
+    std::atomic_bool phy_pause_ = true;
+    float         camera_scale_ = 1.0f;
+    bool          is_init_ = false;
+    std::atomic_bool is_done_ = true;
+    SDL_Window*   window_ = nullptr;
+    SDL_GLContext gl_context_ = nullptr;
+    int           phy_step_ = 0;
+    int           phy_vel_iters_ = 0;
+    int           phy_pos_iters_ = 0;
+    float         phy_hz_ = 0;
+    int           phy_accum_ = 0;
+    Uint32        phy_last_ = 0;
+    bool          phy_is_updated_ = false;
+    std::vector<Texture*> textures_;
+    Texture       empty_texture_;
+    std::vector<Game_object*> game_objects_;
+    SDL_Event     event_;
+    i1_callback_link cb_frame_;
+    f2_callback_link cb_window_resize_;
+    f2_callback_link cb_mouse_move_;
+    f3_callback_link cb_mouse_down_;
+    f3_callback_link cb_mouse_up_;
 
-Engine::~Engine()
-{
-    Cleanup();
-}
-
-bool Engine::Init(const char* title, int width, int height, int exflags)
-{
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
-        return false;
-
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
-    Uint32 window_flags = SDL_WINDOW_OPENGL | exflags;
-
-    window     = SDL_CreateWindow(title, 0, 0, width, height, window_flags);
-    gl_context = SDL_GL_CreateContext(window);
-
-    int dw, dh;
-    SDL_GL_GetDrawableSize(window, &dw, &dh);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_2D);
-    glViewport(0, 0, dw, dh);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, dw, dh, 0, 0, 1);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glClearColor(0.4f, 0.4f, 0.6f, 1.0f);
-
-    ImGui_ImplSdlGL2_Init(window);
-    ImGuiStyle* style = &ImGui::GetStyle();
-    style->WindowRounding = 3;
-    style->FrameRounding  = 3;
-    style->ScrollbarRounding = 3;
-    style->GrabRounding = 3;
-
-    init = true;
-    return true;
-}
-
-bool Engine::Init_physics(const vec2& gravity, float scale, int time_update, int vel_iters, int pos_iters)
-{
-    phy_scale = scale;
-    phy_scale_inv = 1.0f / scale;
-    phy_step  = time_update;
-    phy_vel_iters = vel_iters;
-    phy_pos_iters = pos_iters;
-    phy_hz = 1.0f/(1000.0f/(float)time_update);
-    phy_world.SetGravity(gravity);
-
-    return true;
-}
-
-void Engine::Cleanup()
-{
-    for (auto it : game_objects)
-        delete it;
-    for (auto it : textures)
-        delete it;
-    game_objects.clear();
-    ImGui_ImplSdlGL2_Shutdown();
-    if (gl_context)
-        SDL_GL_DeleteContext(gl_context);
-    if (window)
-        SDL_DestroyWindow(window);
-    SDL_Quit();
-}
-
-void Engine::Run()
-{
-    if (!init) return;
-    done = false;
-    int delta = 0;
-    Uint32 now;
-    last = SDL_GetTicks();
-    phy_accum   = 0;
-    phy_updated = false;
-
-    while (!done)
+    bool Init(const char* title, int width, int height, float scale, Uint32 exflags)
     {
-        Parse_events();
-        
-        now   = SDL_GetTicks();
-        delta = (now - last);
-        last  = now;
-        if (delta > 160) delta = 160;
-        Update_physics(delta);
+        is_init_ = false;
 
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplSdlGL2_NewFrame(window);
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
+            return false;
 
-        for (const auto& it : game_objects) {
-            if (phy_updated)
-                it->Update(now);
-            if (it->visible)
-                it->Draw();
-        }
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+        SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-        if (callback_frame)
-            callback_frame(now);
+        window_ = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_OPENGL | exflags);
+        gl_context_ = SDL_GL_CreateContext(window_);
+        SDL_GL_SetSwapInterval(0);
 
-        ImGui::Render();
-        SDL_GL_SwapWindow(window);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_TEXTURE_2D);
+        glClearColor(0.4f, 0.4f, 0.6f, 1.0f);
+
+        int dw, dh;
+        SDL_GL_GetDrawableSize(window_, &dw, &dh);
+        Setup_camera((float)dw, (float)dh, scale);
+
+        Gui::Init(window_);
+        Gui::Set_rounding(3);
+
+        is_init_ = true;
+        return true;
     }
-}
 
-void Engine::Parse_events()
-{
-    static SDL_Event event;
-
-    while (SDL_PollEvent(&event))
+    bool Init_physics(const vec2& gravity, int time_update_ms, int vel_iters, int pos_iters)
     {
-        ImGui_ImplSdlGL2_ProcessEvent(&event);
-        switch (event.type) {
-        case SDL_QUIT:
-            Stop();
-            break;
-        case SDL_MOUSEMOTION:
-            for (const auto& obj : game_objects)
-                obj->On_mouse_move((float)event.motion.x, (float)event.motion.y);
-            if (callback_mouse_move) {
-                callback_mouse_move((float)event.motion.x, (float)event.motion.y);
-            }
-            break;
-        case SDL_MOUSEBUTTONDOWN:
+        phy_step_ = time_update_ms;
+        phy_vel_iters_ = vel_iters;
+        phy_pos_iters_ = pos_iters;
+        phy_hz_ = 1.0f / (1000.0f / (float)time_update_ms);
+        phy_world_.SetGravity(gravity);
+
+        return true;
+    }
+
+    void Select_object(Game_object* obj)
+    {
+        for (auto& it : game_objects_)
+            it->selected = (it == obj);
+    }
+
+    void Parse_events()
+    {
+        while (SDL_PollEvent(&event_))
         {
-            vec2 cursor((float)event.button.x, (float)event.button.y);
-            for (const auto& obj : game_objects) {
-                if (obj->Cursor_enter(cursor)) {
-                    Select_object(obj);
-                    break;
+            Gui::ProcessEvent(&event_);
+
+            switch (event_.type) {
+            case SDL_QUIT:
+                Stop();
+                break;
+            case SDL_MOUSEMOTION:
+            {
+                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                for (const auto& obj : game_objects_) {
+                    obj->On_mouse_move(cursor.x, cursor.y);
                 }
-                else
-                    obj->selected = false;
-            }
-            for (const auto& obj : game_objects) {
-                obj->On_mouse_down((float)event.button.x, (float)event.button.y, event.button.button);
-            }
-            if (callback_mouse_down) {
-                callback_mouse_down((float)event.button.x, (float)event.button.y, event.button.button);
-            }
-        }
-        break;
-        case SDL_MOUSEBUTTONUP:
-            for (const auto& obj : game_objects)
-                obj->On_mouse_up((float)event.button.x, (float)event.button.y, event.button.button);
-            if (callback_mouse_up) {
-                callback_mouse_up((float)event.button.x, (float)event.button.y, event.button.button);
-            }
-            break;
-        case SDL_WINDOWEVENT:
-            if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                if (callback_window_resize) {
-                    callback_window_resize((float)event.window.data1, (float)event.window.data2);
+                if (cb_mouse_move_.func) {
+                    (cb_mouse_move_.obj->*cb_mouse_move_.func)(cursor.x, cursor.y);
                 }
             }
             break;
-        }
-    }
-}
-
-void Engine::Update_physics(int delta)
-{
-    if (phy_pause) {
-        phy_accum   = 0;
-        phy_updated = false;
-        return;
-    }
-    phy_accum  += delta;
-    phy_updated = phy_accum >= phy_step;
-
-    while (phy_accum >= phy_step) {
-        phy_world.Step(phy_hz, phy_vel_iters, phy_pos_iters);
-        phy_accum -= phy_step;
-    }
-}
-
-float Engine::Get_surface_width()
-{
-    int dw;
-    SDL_GL_GetDrawableSize(window, &dw, nullptr);
-    return (float)dw;
-}
-
-float Engine::Get_surface_height()
-{
-    int dh;
-    SDL_GL_GetDrawableSize(window, nullptr, &dh);
-    return (float)dh;
-}
-
-Texture* Engine::Load_texture(const char* filename)
-{
-    Texture* texture = new Texture();
-    if (!texture->Load(filename)) {
-        delete texture;
-        texture = &empty_texture;
-    }
-    else
-        textures.push_back(texture);
-    return texture;
-}
-
-bool Engine::Set_gui_font(const char * filename, float size)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    ImFont* font = io.Fonts->AddFontFromFileTTF(filename, size, NULL, io.Fonts->GetGlyphRangesCyrillic());
-    if (font == NULL)
-        return false;
-    else
-        ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::RasterizerFlags::ForceAutoHint);
-
-    return font->IsLoaded();
-}
-
-b2Body* Engine::Create_body(const b2BodyDef& def)
-{
-    return phy_world.CreateBody(&def);
-}
-
-void Engine::Delete_body(b2Body* body)
-{
-    phy_world.DestroyBody(body);
-}
-
-b2Joint* Engine::Create_joint(b2JointDef* def)
-{
-    return phy_world.CreateJoint(def);
-}
-
-void Engine::Delete_join(b2Joint* j)
-{
-    phy_world.DestroyJoint(j);
-}
-
-void Engine::Add_game_object(Game_object* obj)
-{
-    game_objects.insert(game_objects.begin(), obj);
-}
-
-void Engine::Pause_physics()
-{
-    phy_pause   = true;
-    phy_updated = false;
-}
-
-void Engine::Start_physics()
-{
-    phy_accum   = 0;
-    phy_updated = false;
-    last        = SDL_GetTicks();
-    phy_pause   = false;
-}
-
-void Engine::Select_object(Game_object* obj)
-{
-    for (auto& it : game_objects)
-       it->selected = (it == obj);
-}
-
-b2Body* Engine::Get_body_at_point(const vec2& p)
-{
-    for (const auto& obj : game_objects) {
-        if (obj->Get_type() == otPhysicBody) {
-            Phy_body_object* body_obj = static_cast<Phy_body_object*>(obj);
-            if (body_obj->TestPoint(p)) {
-                return body_obj->Get_body();
+            case SDL_MOUSEBUTTONDOWN:
+            {
+                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                for (const auto& obj : game_objects_) {
+                    if (obj->Cursor_enter(cursor)) {
+                        Select_object(obj);
+                        break;
+                    }
+                    else
+                        obj->selected = false;
+                }
+                for (const auto& obj : game_objects_) {
+                    obj->On_mouse_down(cursor.x, cursor.y, event_.button.button);
+                }
+                if (cb_mouse_down_.func) {
+                    (cb_mouse_down_.obj->*cb_mouse_down_.func)(cursor.x, cursor.y, event_.button.button);
+                }
+            }
+            break;
+            case SDL_MOUSEBUTTONUP:
+            {
+                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                for (const auto& obj : game_objects_)
+                    obj->On_mouse_up(cursor.x, cursor.y, event_.button.button);
+                if (cb_mouse_up_.func) {
+                    (cb_mouse_up_.obj->*cb_mouse_up_.func)(cursor.x, cursor.y, event_.button.button);
+                }
+            }
+            break;
+            case SDL_WINDOWEVENT:
+            {
+                if (event_.window.event == SDL_WINDOWEVENT_RESIZED) {
+                    if (cb_window_resize_.func) {
+                        (cb_window_resize_.obj->*cb_window_resize_.func)((float)event_.window.data1, (float)event_.window.data2);
+                    }
+                }
+            }
+            break;
             }
         }
     }
-    return nullptr;
+
+    void Update_physics(int delta)
+    {
+        if (phy_pause_) {
+            phy_accum_ = 0;
+            phy_is_updated_ = false;
+            return;
+        }
+        phy_accum_ += delta;
+        phy_is_updated_ = phy_accum_ >= phy_step_;
+
+        while (phy_accum_ >= phy_step_) {
+            phy_world_.Step(phy_hz_, phy_vel_iters_, phy_pos_iters_);
+            phy_accum_ -= phy_step_;
+        }
+    }
+
+    void Cleanup()
+    {
+        for (auto it : game_objects_)
+            delete it;
+        for (auto it : textures_)
+            delete it;
+        game_objects_.clear();
+        Gui::Shutdown();
+        if (gl_context_)
+            SDL_GL_DeleteContext(gl_context_);
+        if (window_)
+            SDL_DestroyWindow(window_);
+        SDL_Quit();
+    }
+
+    void Run()
+    {
+        if (!is_init_) return;
+        is_done_ = false;
+        int delta = 0;
+        Uint32 now;
+        phy_last_ = SDL_GetTicks();
+        phy_accum_ = 0;
+        phy_is_updated_ = false;
+
+        while (!is_done_)
+        {
+            Parse_events();
+
+            now = SDL_GetTicks();
+            delta = (now - phy_last_);
+            phy_last_ = now;
+            if (delta > 160) delta = 160;
+            Update_physics(delta);
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            Gui::New_frame();
+
+            for (const auto& it : game_objects_) {
+                if (phy_is_updated_)
+                    it->Update(now);
+                if (it->visible)
+                    it->Draw();
+            }
+
+            if (cb_frame_.func) {
+                (cb_frame_.obj->*cb_frame_.func)(now);
+            }
+
+            Gui::Render();
+            SDL_GL_SwapWindow(window_);
+        }
+
+        Cleanup();
+    }
+
+    void Stop()
+    {
+        is_done_ = true;
+    }
+
+    void Setup_camera(float width, float height, float scale)
+    {
+        glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, width * scale, height * scale, 0, 0, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        camera_scale_ = scale;
+    }
+
+
+    float Get_dpi()
+    {
+        int i = SDL_GetWindowDisplayIndex(window_);
+        if (i < 0)
+            return 96;
+        float dpi;
+        if (SDL_GetDisplayDPI(i, &dpi, nullptr, nullptr) != 0)
+            dpi = 96;
+        return dpi;
+    }
+
+    Texture* Load_texture(const char* filename)
+    {
+        Texture* texture = new Texture();
+        if (!texture->Load(filename)) {
+            delete texture;
+            texture = &empty_texture_;
+        }
+        else {
+            textures_.push_back(texture);
+        }
+        return texture;
+    }
+
+    void Pause_physics()
+    {
+        phy_pause_ = true;
+        phy_is_updated_ = false;
+    }
+
+    void Start_physics()
+    {
+        phy_accum_ = 0;
+        phy_is_updated_ = false;
+        phy_last_ = SDL_GetTicks();
+        phy_pause_ = false;
+    }
+
+    float Get_surface_width()
+    {
+        int dw;
+        SDL_GL_GetDrawableSize(window_, &dw, nullptr);
+        return (float)dw;
+    }
+
+    float Get_surface_height()
+    {
+        int dh;
+        SDL_GL_GetDrawableSize(window_, nullptr, &dh);
+        return (float)dh;
+    }
+
+    void Add_game_object(Game_object* obj)
+    {
+        game_objects_.insert(game_objects_.begin(), obj);
+    }
+
+    b2Body* Get_body_at_point(const vec2& p)
+    {
+        for (const auto& obj : game_objects_) {
+            if (obj->Get_type() == otPhysicBody) {
+                Phy_body_object* body_obj = static_cast<Phy_body_object*>(obj);
+                if (body_obj->TestPoint(p)) {
+                    return body_obj->Get_body();
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    bool Physic_paused()
+    {
+        return phy_pause_;
+    }
+
+    float Get_camera_scale()
+    {
+        return camera_scale_;
+    }
+
+    b2World& Get_world()
+    {
+        return phy_world_;
+    }
+
+    unsigned Get_fps()
+    {
+        return ImGui::GetIO().Framerate;
+    }
+
+    void SetWindowTitle(const char* text)
+    {
+        SDL_SetWindowTitle(window_, text);
+    }
+
+    void _Set_callback_frame(Base_class* object, i1_callback function)
+    {
+        cb_frame_.obj = object;
+        cb_frame_.func = function;
+    }
+
+    void _Set_callback_window_resize(Base_class* object, f2_callback function)
+    {
+        cb_window_resize_.obj = object;
+        cb_window_resize_.func = function;
+    }
+
+    void _Set_callback_mouse_down(Base_class* object, f3_callback function)
+    {
+        cb_mouse_down_.obj = object;
+        cb_mouse_down_.func = function;
+    }
+
+    void _Set_callback_mouse_up(Base_class* object, f3_callback function)
+    {
+        cb_mouse_up_.obj = object;
+        cb_mouse_up_.func = function;
+    }
+
+    void _Set_callback_mouse_move(Base_class* object, f2_callback function)
+    {
+        cb_mouse_move_.obj = object;
+        cb_mouse_move_.func = function;
+    }
 }
 
-void Engine::Stop()
-{
-    done = true;
-}
 
-float Engine::Get_main_menu_height()
-{
-    return ImGui::GetStyle().FramePadding.y * 2 + ImGui::GetFontSize();
-}
-
-float Engine::Get_dpi()
-{
-    int i = SDL_GetWindowDisplayIndex(window);
-    if (i < 0)
-        return 96;
-    float dpi;
-    if (SDL_GetDisplayDPI(i, &dpi, nullptr, nullptr) != 0)
-        dpi = 96;
-    return dpi;
-}

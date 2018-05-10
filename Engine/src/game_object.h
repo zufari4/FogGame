@@ -22,25 +22,16 @@ public:
     bool selected;
 protected:
     Object_type type;
-    vec2  pos;
-    float angle;
-    std::vector<vec2> vertices;
 public:
     Game_object();
     virtual ~Game_object() {};
-    virtual void Hide() { visible = false; };
-    virtual void Show() { visible = true;  };
-    virtual void Set_pos(const vec2& newpos);
-    virtual vec2 Get_pos() { return pos; };
-    virtual void Move(const vec2& delta);
-    virtual void Rotate(float delta_rad);
-    virtual void Draw() {};
     virtual void Update(Uint32 ticks) {};
-    virtual bool Cursor_enter(const vec2& /*cursor*/) { return false; };
     virtual void On_mouse_move(float, float) {};
     virtual void On_mouse_down(float, float, int) {};
     virtual void On_mouse_up(float, float, int) {};
-    virtual vec2 Get_vertex(int idx);
-    Object_type  Get_type() { return type; };
-    float Get_angle();
+    virtual void Draw() {};
+    virtual void Hide();
+    virtual void Show();
+    Object_type  Get_type();
+    virtual bool Cursor_enter(const vec2&);
 };

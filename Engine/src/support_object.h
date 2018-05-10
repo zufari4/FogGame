@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Box2D/Box2D.h>
-#include "game_object.h"
+#include "draw_object.h"
 #include <vector>
 #include <functional>
 
@@ -9,7 +9,7 @@
 #define CIRCLE_STEP 19
 #define LINE_WIDTH 2.0f
 
-class Support_object : public Game_object
+class Support_object : public Draw_object
 {
 public:
     Support_object();

@@ -13,5 +13,5 @@ public:
     void  Set_radius(float val);
     float Get_radius();
 private:
-    void Get_circle_vertexes(float cx, float cy, float r, int pix_on_step, std::vector<vec2>& out);
+    void Get_circle_vertexes(double cx, double cy, double r, int pix_on_step, std::vector<vec2>& out);
 };

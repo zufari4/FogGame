@@ -1,7 +1,8 @@
-#include "Support_object.h"
+#include "support_object.h"
+#include "engine.h"
 
 Support_object::Support_object():
-    Game_object(), is_drag(false), drag_start(b2Vec2_zero), callback_change(nullptr)
+    Draw_object(), is_drag(false), drag_start(b2Vec2_zero), callback_change(nullptr)
 {
     type = otSupport;
 }
@@ -22,9 +23,8 @@ bool Support_object::Point_in_shape(const vec2& p)
 {
     if (vertices.size() < 3)
         return false;
-    unsigned i, j;
     bool c = false;
-    for (i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
+    for (size_t i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
         if (((vertices[i].y > p.y) != (vertices[j].y > p.y)) &&
             (p.x < (vertices[j].x - vertices[i].x) * (p.y - vertices[i].y) / (vertices[j].y - vertices[i].y) + vertices[i].x))
             c = !c;
@@ -35,7 +35,7 @@ bool Support_object::Point_in_shape(const vec2& p)
 bool Support_object::Point_in_vertex(const vec2& vertex, const vec2& point)
 {
     vec2  d = vertex - point;
-    float r = POINT_SIZE / 2.0f;
+    float r = POINT_SIZE * Engine::Get_camera_scale() / 2.0f;
     return d.LengthSquared() < r*r;
 }
 
