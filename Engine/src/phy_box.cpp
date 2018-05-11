@@ -75,7 +75,7 @@ void Phy_box::Update_body()
     fixture_def.shape = shape;
     fixture_def.density = 0.5f;
     fixture_def.friction = 0.5f;
-    fixture_def.restitution = 0.6f;
+    fixture_def.restitution = 0.4f;
     if (fixture) body->DestroyFixture(fixture);
     fixture = body->CreateFixture(&fixture_def);
 

@@ -25,12 +25,24 @@ Phy_circle::~Phy_circle()
 void Phy_circle::Update(Uint32)
 {
     vec2 newpos = body->GetPosition();
-    vec2 delta  = newpos - oldp;
-    oldp = newpos;
     float newangle = body->GetAngle();
+
+    vec2 delta = (newpos - oldp);
+    oldp = newpos;
+
     support_object->Move(delta);
     support_object->Rotate(newangle - angle);
     angle = newangle;
+}
+
+void Phy_circle::Set_radius(float val)
+{
+    ((Support_circle*)support_object)->Set_radius(val);
+}
+
+float Phy_circle::Get_radius()
+{
+    return ((Support_circle*)support_object)->Get_radius();
 }
 
 void Phy_circle::On_changed()

@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-#define POINT_SIZE 10.0f
+#define POINT_SIZE 20.0f
 #define CIRCLE_STEP 19
 #define LINE_WIDTH 2.0f
 

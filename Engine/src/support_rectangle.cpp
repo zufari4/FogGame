@@ -34,19 +34,19 @@ void Support_rectangle::Draw()
         glBegin(GL_POINTS);
 
         if (selected_vertex == 0) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
         glVertex2f(vertices[0].x, vertices[0].y);
 
         if (selected_vertex == 1) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
         glVertex2f(vertices[1].x, vertices[1].y);
 
         if (selected_vertex == 2) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
         glVertex2f(vertices[2].x, vertices[2].y);
 
         if (selected_vertex == 3) glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        else glColor4f(0.0f, 0.7f, 0.0f, 1.0f);
+        else glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
         glVertex2f(vertices[3].x, vertices[3].y);
 
         glEnd();

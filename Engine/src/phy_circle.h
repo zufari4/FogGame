@@ -9,7 +9,9 @@ class Phy_circle : public Phy_body_object
 public:
     Phy_circle();
     ~Phy_circle();
-    void Update(Uint32);
+    void  Update(Uint32);
+    void  Set_radius(float val);
+    float Get_radius();
 private:
     vec2    oldp;
 protected:
