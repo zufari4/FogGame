@@ -20,7 +20,7 @@ private:
     Texture* texture_btn_play;
     Texture* texture_btn_pause;
     Texture* texture_btn_circle;
-    b2Body*  ground_body;
+    b2Body*  ground_body_;
     Label*   label_fps;
     Window*  tools_window;
     Image_button* play_btn;
@@ -36,6 +36,12 @@ public:
     void Button_phy_circle_click(Base_control& sender);
     void Button_phy_join_click(Base_control& sender);
     void Exit_click(const std::string&);
+    void On_mouse_down(float x, float y, float b);
+    void On_mouse_up(float x, float y, float b);
+    void On_mouse_move(float x, float y);
 private:
     void Update_phy_wall(float w, float h);
+    b2MouseJoint* Create_mouse_joint(b2Body* body, vec2 target);
+    b2MouseJoint* drag_joint_ = nullptr;
+    b2Body* dummy_body_ = nullptr;
 };

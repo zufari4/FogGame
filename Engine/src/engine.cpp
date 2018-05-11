@@ -103,13 +103,16 @@ namespace Engine
             case SDL_MOUSEBUTTONDOWN:
             {
                 vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
-                for (const auto& obj : game_objects_) {
-                    if (obj->Cursor_enter(cursor)) {
-                        Select_object(obj);
-                        break;
+                if (phy_pause_)
+                {
+                    for (const auto& obj : game_objects_) {
+                        if (obj->Cursor_enter(cursor)) {
+                            Select_object(obj);
+                            break;
+                        }
+                        else
+                            obj->selected = false;
                     }
-                    else
-                        obj->selected = false;
                 }
                 for (const auto& obj : game_objects_) {
                     obj->On_mouse_down(cursor.x, cursor.y, event_.button.button);

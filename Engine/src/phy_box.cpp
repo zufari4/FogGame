@@ -7,7 +7,7 @@ Phy_box::Phy_box():
     support_object = new Support_rectangle();
     support_object->Set_callback_change(this, &Phy_box::On_changed);
     pos = support_object->Get_pos();
-
+    angle = support_object->Get_angle();
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     oldp = vec2(pos.x, pos.y);

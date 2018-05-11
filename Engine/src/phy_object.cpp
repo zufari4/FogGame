@@ -26,16 +26,19 @@ void Phy_object::Show()
 
 void Phy_object::Set_pos(const vec2& newpos)
 {
+    Draw_object::Set_pos(newpos);
     support_object->Set_pos(newpos);
 }
 
 void Phy_object::Move(const vec2& delta)
 {
+    Draw_object::Move(delta);
     support_object->Move(delta);
 }
 
 void Phy_object::Rotate(float delta_rad)
 {
+    Draw_object::Rotate(delta_rad);
     support_object->Rotate(delta_rad);
 }
 
