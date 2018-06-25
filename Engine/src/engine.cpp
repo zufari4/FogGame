@@ -10,11 +10,11 @@ namespace Engine
     std::atomic_bool is_done_ = true;
     SDL_Window*   window_ = nullptr;
     SDL_GLContext gl_context_ = nullptr;
-    int           phy_step_ = 0;
+    double        phy_step_ = 0;
+    float         phy_step_s_ = 0;
     int           phy_vel_iters_ = 0;
     int           phy_pos_iters_ = 0;
-    float         phy_hz_ = 0;
-    int           phy_accum_ = 0;
+    double        phy_accum_ = 0;
     Uint32        phy_last_ = 0;
     bool          phy_is_updated_ = false;
     std::vector<Texture*> textures_;
@@ -70,12 +70,12 @@ namespace Engine
         return true;
     }
 
-    bool Init_physics(const vec2& gravity, int time_update_ms, int vel_iters, int pos_iters)
+    bool Init_physics(const vec2& gravity, double phy_hz, int vel_iters, int pos_iters)
     {
-        phy_step_ = time_update_ms;
+        phy_step_ = 1000.0/phy_hz;
+        phy_step_s_ = 1.0 / phy_hz;
         phy_vel_iters_ = vel_iters;
         phy_pos_iters_ = pos_iters;
-        phy_hz_ = 1.0f / (1000.0f / (float)time_update_ms);
         phy_world_.SetGravity(gravity);
 
         return true;
@@ -153,19 +153,18 @@ namespace Engine
         }
     }
 
-    void Update_physics(int delta)
+    void Update_physics()
     {
         if (phy_pause_) {
             phy_accum_ = 0;
             phy_is_updated_ = false;
-            return;
         }
-        phy_accum_ += delta;
-        phy_is_updated_ = phy_accum_ >= phy_step_;
-
-        while (phy_accum_ >= phy_step_) {
-            phy_world_.Step(phy_hz_, phy_vel_iters_, phy_pos_iters_);
-            phy_accum_ -= phy_step_;
+        else {
+            phy_is_updated_ = phy_accum_ >= phy_step_;
+            while (phy_accum_ >= phy_step_) {
+                phy_world_.Step(phy_step_s_, phy_vel_iters_, phy_pos_iters_);
+                phy_accum_ -= phy_step_;
+            }
         }
     }
 
@@ -188,7 +187,6 @@ namespace Engine
     {
         if (!is_init_) return;
         is_done_ = false;
-        int delta = 0;
         Uint32 now;
         phy_last_ = SDL_GetTicks();
         phy_accum_ = 0;
@@ -199,10 +197,10 @@ namespace Engine
             Parse_events();
 
             now = SDL_GetTicks();
-            delta = (now - phy_last_);
+            phy_accum_ += (now - phy_last_);
             phy_last_ = now;
-            if (delta > 160) delta = 160;
-            Update_physics(delta);
+            if (phy_accum_ > 160) phy_accum_ = 160;
+            Update_physics();
 
             glClear(GL_COLOR_BUFFER_BIT);
             Gui::New_frame();

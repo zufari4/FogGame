@@ -1,3 +1,4 @@
 # FogGame
-2D game and editor
+2D game and editor 
+
 VS 2015
