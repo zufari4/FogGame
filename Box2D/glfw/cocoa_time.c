@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 macOS - www.glfw.org
+// GLFW 3.0 OS X - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2009-2010 Camilla Berglund <elmindreda@elmindreda.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,18 +29,27 @@
 #include <mach/mach_time.h>
 
 
+// Return raw time
+//
+static uint64_t getRawTime(void)
+{
+    return mach_absolute_time();
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
 // Initialise timer
 //
-void _glfwInitTimerNS(void)
+void _glfwInitTimer(void)
 {
     mach_timebase_info_data_t info;
     mach_timebase_info(&info);
 
-    _glfw.ns_time.frequency = (info.denom * 1e9) / info.numer;
+    _glfw.ns.timer.resolution = (double) info.numer / (info.denom * 1.0e9);
+    _glfw.ns.timer.base = getRawTime();
 }
 
 
@@ -48,13 +57,15 @@ void _glfwInitTimerNS(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-uint64_t _glfwPlatformGetTimerValue(void)
+double _glfwPlatformGetTime(void)
 {
-    return mach_absolute_time();
+    return (double) (getRawTime() - _glfw.ns.timer.base) *
+        _glfw.ns.timer.resolution;
 }
 
-uint64_t _glfwPlatformGetTimerFrequency(void)
+void _glfwPlatformSetTime(double time)
 {
-    return _glfw.ns_time.frequency;
+    _glfw.ns.timer.base = getRawTime() -
+        (uint64_t) (time / _glfw.ns.timer.resolution);
 }
 

@@ -1,5 +1,6 @@
 #include "engine.h"
 #include "Gui.h"
+#include "loger.h"
 
 namespace Engine
 {
@@ -75,7 +76,7 @@ namespace Engine
     bool Init_physics(const vec2& gravity, double phy_hz, int vel_iters, int pos_iters)
     {
         phy_step_ = 1000.0/phy_hz;
-        phy_step_s_ = 1.0 / phy_hz;
+        phy_step_s_ = 1.0f /(float)phy_hz;
         phy_vel_iters_ = vel_iters;
         phy_pos_iters_ = pos_iters;
         phy_world_.SetGravity(gravity);
@@ -155,7 +156,7 @@ namespace Engine
         }
     }
 
-    void Update_physics()
+    void Inetgrate_physics()
     {
         if (phy_pause_) {
             phy_accum_ = 0;
@@ -201,8 +202,8 @@ namespace Engine
             now = SDL_GetTicks();
             phy_accum_ += (now - phy_last_);
             phy_last_ = now;
-            if (phy_accum_ > 160) phy_accum_ = 160;
-            Update_physics();
+            if (phy_accum_ > 160) phy_accum_ = phy_step_;
+            Inetgrate_physics();
 
             glClear(GL_COLOR_BUFFER_BIT);
             Gui::New_frame();
@@ -329,7 +330,7 @@ namespace Engine
 
     unsigned Get_fps()
     {
-        return ImGui::GetIO().Framerate;
+        return (int)ImGui::GetIO().Framerate;
     }
 
     void SetWindowTitle(const char* text)

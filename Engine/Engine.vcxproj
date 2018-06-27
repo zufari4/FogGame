@@ -23,6 +23,7 @@
     <ClInclude Include="src\draw_object.h" />
     <ClInclude Include="src\engine.h" />
     <ClInclude Include="src\game_object.h" />
+    <ClInclude Include="src\loger.h" />
     <ClInclude Include="src\phy_box.h" />
     <ClInclude Include="src\phy_circle.h" />
     <ClInclude Include="src\phy_join.h" />
@@ -38,6 +39,7 @@
     <ClCompile Include="src\draw_object.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\loger.cpp" />
     <ClCompile Include="src\phy_box.cpp" />
     <ClCompile Include="src\phy_circle.cpp" />
     <ClCompile Include="src\phy_join.cpp" />
@@ -102,18 +104,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Build\</OutDir>
     <TargetName>engine_d</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)Build\</OutDir>
     <TargetName>engine_r</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\</OutDir>
-    <TargetName>engine</TargetName>
+    <TargetName>engine_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\</OutDir>
-    <TargetName>engine</TargetName>
+    <TargetName>engine_r</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
