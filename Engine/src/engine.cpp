@@ -45,11 +45,9 @@ namespace Engine
         SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-        window_ = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_OPENGL | exflags);
+        window_ = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | exflags);
         gl_context_ = SDL_GL_CreateContext(window_);
-        SDL_GL_SetSwapInterval(0);
-
-        
+        SDL_GL_SetSwapInterval(0);       
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDisable(GL_DEPTH_TEST);
@@ -65,11 +63,10 @@ namespace Engine
         int dw, dh;
         SDL_GL_GetDrawableSize(window_, &dw, &dh);
         Setup_camera((float)dw, (float)dh, scale);
-
         Gui::Init(window_);
         Gui::Set_rounding(3);
-
         is_init_ = true;
+
         return true;
     }
 
@@ -367,6 +364,12 @@ namespace Engine
         cb_mouse_move_.obj = object;
         cb_mouse_move_.func = function;
     }
+
+	size_t Get_count_game_objects()
+	{
+		return game_objects_.size();
+	}
+
 }
 
 
