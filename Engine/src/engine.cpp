@@ -57,11 +57,11 @@ namespace Engine
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_MULTISAMPLE);
         glEnable(GL_LINE_SMOOTH);
-        glEnable(GL_POLYGON_SMOOTH);
+        glDisable(GL_POLYGON_SMOOTH);
         glClearColor(0.4f, 0.4f, 0.6f, 1.0f);
         glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
         glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-        glHint(GL_POLYGON_SMOOTH_HINT, GL_FASTEST);
+
         int dw, dh;
         SDL_GL_GetDrawableSize(window_, &dw, &dh);
         Setup_camera((float)dw, (float)dh, scale);
