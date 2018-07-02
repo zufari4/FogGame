@@ -7,7 +7,8 @@
 
 typedef enum {
     otUnknown,
-	otPhysicShape
+	otPhysicShape,
+	otPhysicJoin
 } Object_type;
 
 class Game_object: virtual public Draw_object

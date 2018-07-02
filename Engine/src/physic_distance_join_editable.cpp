@@ -2,7 +2,7 @@
 #include "engine.h"
 
 Physic_distance_join_editable::Physic_distance_join_editable():
-	Game_object(otPhysicShape),
+	Game_object(otPhysicJoin),
 	Physic_distance_join(),
 	Editable_line_segment()
 {
