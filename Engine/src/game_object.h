@@ -3,35 +3,25 @@
 #include <vector>
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <Box2D/Box2D.h>
-#include "base_class.h"
-
-typedef b2Vec2 vec2;
+#include "draw_object.h"
 
 typedef enum {
     otUnknown,
-    otSupport,
-    otPhysic,
-    otPhysicBody
+	otPhysicShape
 } Object_type;
 
-class Game_object: public Base_class
+class Game_object: virtual public Draw_object
 {
 public:
-    bool visible;
-    bool selected;
-protected:
-    Object_type type;
-public:
-    Game_object();
+    Game_object(Object_type type);
     virtual ~Game_object() {};
-    virtual void Update(Uint32 ticks) {};
+    virtual void Update(Uint32) {};
     virtual void On_mouse_move(float, float) {};
     virtual void On_mouse_down(float, float, int) {};
     virtual void On_mouse_up(float, float, int) {};
-    virtual void Draw() {};
-    virtual void Hide();
-    virtual void Show();
-    Object_type  Get_type();
-    virtual bool Cursor_enter(const vec2&);
+	Object_type  Get_type() const { return type_; };
+	virtual bool Cursor_enter(const vec2&) const { return false; };
+	virtual b2Body* Get_body() const { return nullptr; };
+protected:
+	Object_type type_;
 };

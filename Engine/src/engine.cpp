@@ -83,8 +83,9 @@ namespace Engine
 
     void Select_object(Game_object* obj)
     {
-        for (auto& it : game_objects_)
-            it->selected = (it == obj);
+		for (auto& it : game_objects_) {
+			it->Set_selected(it == obj);
+		}
     }
 
     void Parse_events()
@@ -118,8 +119,9 @@ namespace Engine
                             Select_object(obj);
                             break;
                         }
-                        else
-                            obj->selected = false;
+						else {
+							obj->Set_selected(false);
+						}
                     }
                 }
                 for (const auto& obj : game_objects_) {
@@ -208,7 +210,7 @@ namespace Engine
             for (const auto& it : game_objects_) {
                 if (phy_is_updated_)
                     it->Update(now);
-                if (it->visible)
+                if (it->Is_visible())
                     it->Draw();
             }
 
@@ -294,16 +296,17 @@ namespace Engine
 
     void Add_game_object(Game_object* obj)
     {
-        game_objects_.insert(game_objects_.begin(), obj);
+		if (std::find(game_objects_.begin(), game_objects_.end(), obj) == game_objects_.end()) {
+			game_objects_.insert(game_objects_.begin(), obj);
+		}
     }
 
     b2Body* Get_body_at_point(const vec2& p)
     {
         for (const auto& obj : game_objects_) {
-            if (obj->Get_type() == otPhysicBody) {
-                Phy_body_object* body_obj = static_cast<Phy_body_object*>(obj);
-                if (body_obj->TestPoint(p)) {
-                    return body_obj->Get_body();
+            if (obj->Get_type() == otPhysicShape) {
+                if (obj->Cursor_enter(p)) {
+                    return obj->Get_body();
                 }
             }
         }
@@ -330,7 +333,13 @@ namespace Engine
         return (int)ImGui::GetIO().Framerate;
     }
 
-    void SetWindowTitle(const char* text)
+
+	const vec2 Scale_vec2(float x, float y)
+	{
+		return vec2(x * camera_scale_, y * camera_scale_);
+	}
+
+	void SetWindowTitle(const char* text)
     {
         SDL_SetWindowTitle(window_, text);
     }

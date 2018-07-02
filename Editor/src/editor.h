@@ -5,9 +5,6 @@
 #include "engine.h"
 #include "gui.h"
 #include "base_class.h"
-#include "phy_box.h"
-#include "phy_circle.h"
-#include "phy_join.h"
 
 static const float CAMERA_SCALE = 1.0f / 250.0f;
 static const float BTN_SIZE = 32.0f;

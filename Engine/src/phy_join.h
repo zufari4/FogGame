@@ -2,9 +2,9 @@
 
 #include <Box2D/Box2D.h>
 #include "support_line.h"
-#include "phy_object.h"
+#include "physic_object.h"
 
-class Phy_join : public Phy_object
+class Phy_join : public Physic_object
 {
 public:
     Phy_join();

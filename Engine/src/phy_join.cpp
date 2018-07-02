@@ -2,7 +2,7 @@
 #include "engine.h"
 
 Phy_join::Phy_join():
-    Phy_object(),
+    Physic_object(),
     joint(nullptr)
 {
     support_object = new Support_line();

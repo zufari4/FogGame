@@ -1,58 +1,63 @@
 #include "draw_object.h"
-#include "engine.h"
 
 Draw_object::Draw_object():
-    Game_object(),
-    pos(b2Vec2_zero), angle(0)
+	Base_class(),
+	selected_(false),
+	visible_(false),
+	pos_(b2Vec2_zero),
+	angle_(0.0f)
 {
 
+}
+
+void Draw_object::Show()
+{
+	visible_ = true;
+}
+
+void Draw_object::Set_pos(const vec2& newpos)
+{
+	pos_ = newpos;
+}
+
+const vec2& Draw_object::Get_pos() const
+{
+	return pos_;
+}
+
+float Draw_object::Get_angle() const
+{
+	return angle_;
 }
 
 void Draw_object::Move(const vec2& delta)
 {
-    if (delta.LengthSquared())
-    {
-        pos += delta;
-        for (size_t i = 0; i < vertices.size(); ++i)
-            vertices[i] += delta;
-    }
+	pos_ += delta;
 }
 
-void Draw_object::Set_pos(const vec2& p)
+void Draw_object::Set_selected(bool value)
 {
-    Move(p - pos);
+	selected_ = value;
 }
 
-vec2 Draw_object::Get_pos()
+bool Draw_object::Is_visible() const
 {
-    return pos;
+	return visible_;
 }
 
 void Draw_object::Rotate(float delta_rad)
 {
-    if (delta_rad == 0.0f)
-        return;
-    angle += delta_rad;
-
-    float cc = cosf(delta_rad);
-    float ss = sinf(delta_rad);
-    float x;
-
-    for (size_t i = 0; i < vertices.size(); ++i) {
-        vec2& v = vertices[i];
-        v -= pos;
-        x = v.x * cc - v.y * ss;
-        v.y = (v.x * ss + v.y * cc) + pos.y;
-        v.x = x + pos.x;
-    }
+	angle_ += delta_rad;
 }
 
-vec2 Draw_object::Get_vertex(int idx)
+void Draw_object::Hide()
 {
-    return vertices[idx];
+	visible_ = false;
 }
 
-float Draw_object::Get_angle()
+bool Draw_object::Has_edit() const
 {
-    return angle;
+	return (selected_ && visible_);
 }
+
+

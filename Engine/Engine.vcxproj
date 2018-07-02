@@ -20,34 +20,48 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base_class.h" />
+    <ClInclude Include="src\box_shape.h" />
+    <ClInclude Include="src\circle_shape.h" />
     <ClInclude Include="src\draw_object.h" />
+    <ClInclude Include="src\editable_box.h" />
+    <ClInclude Include="src\editable_circle.h" />
+    <ClInclude Include="src\base_shape.h" />
+    <ClInclude Include="src\editable_line_segment.h" />
+    <ClInclude Include="src\editing_shape.h" />
     <ClInclude Include="src\engine.h" />
     <ClInclude Include="src\game_object.h" />
+    <ClInclude Include="src\line_segment_shape.h" />
     <ClInclude Include="src\loger.h" />
-    <ClInclude Include="src\phy_box.h" />
-    <ClInclude Include="src\phy_circle.h" />
-    <ClInclude Include="src\phy_join.h" />
-    <ClInclude Include="src\phy_object.h" />
+    <ClInclude Include="src\physic_box.h" />
+    <ClInclude Include="src\physic_box_editable.h" />
+    <ClInclude Include="src\physic_circle.h" />
+    <ClInclude Include="src\physic_circle_editable.h" />
+    <ClInclude Include="src\physic_distance_join.h" />
+    <ClInclude Include="src\physic_distance_join_editable.h" />
+    <ClInclude Include="src\physic_object.h" />
     <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\support_circle.h" />
-    <ClInclude Include="src\support_line.h" />
-    <ClInclude Include="src\support_object.h" />
-    <ClInclude Include="src\support_rectangle.h" />
     <ClInclude Include="src\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\box_shape.cpp" />
+    <ClCompile Include="src\circle_shape.cpp" />
     <ClCompile Include="src\draw_object.cpp" />
+    <ClCompile Include="src\editable_box.cpp" />
+    <ClCompile Include="src\editable_circle.cpp" />
+    <ClCompile Include="src\base_shape.cpp" />
+    <ClCompile Include="src\editable_line_segment.cpp" />
+    <ClCompile Include="src\editing_shape.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\line_segment_shape.cpp" />
     <ClCompile Include="src\loger.cpp" />
-    <ClCompile Include="src\phy_box.cpp" />
-    <ClCompile Include="src\phy_circle.cpp" />
-    <ClCompile Include="src\phy_join.cpp" />
-    <ClCompile Include="src\phy_object.cpp" />
-    <ClCompile Include="src\support_circle.cpp" />
-    <ClCompile Include="src\support_line.cpp" />
-    <ClCompile Include="src\support_object.cpp" />
-    <ClCompile Include="src\support_rectangle.cpp" />
+    <ClCompile Include="src\physic_box.cpp" />
+    <ClCompile Include="src\physic_box_editable.cpp" />
+    <ClCompile Include="src\physic_circle.cpp" />
+    <ClCompile Include="src\physic_circle_editable.cpp" />
+    <ClCompile Include="src\physic_distance_join.cpp" />
+    <ClCompile Include="src\physic_distance_join_editable.cpp" />
+    <ClCompile Include="src\physic_object.cpp" />
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
