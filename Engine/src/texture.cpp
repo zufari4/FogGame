@@ -21,7 +21,7 @@ bool Texture::Load(const char* _filename)
 {
     filename = _filename;
     int comp;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(false);
     unsigned char* imageData = stbi_load(_filename, (int*)&width, (int*)&height, &comp, 0);
     if (imageData == NULL)
         return false;

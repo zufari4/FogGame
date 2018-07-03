@@ -77,6 +77,12 @@
     <ClInclude Include="src\physic_distance_join_editable.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\physic_revolute_joint.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physic_revolute_joint_editable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\engine.cpp">
@@ -137,6 +143,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\physic_distance_join_editable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physic_revolute_joint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physic_revolute_joint_editable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

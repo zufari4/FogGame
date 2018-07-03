@@ -17,6 +17,7 @@ private:
     Texture* texture_btn_play;
     Texture* texture_btn_pause;
     Texture* texture_btn_circle;
+	Texture* texture_btn_rev_joint;
     b2Body*  ground_body_;
     Label*   label_fps;
     Window*  tools_window;
@@ -32,6 +33,7 @@ public:
     void Button_phy_run_click(Base_control& sender);
     void Button_phy_circle_click(Base_control& sender);
     void Button_phy_join_click(Base_control& sender);
+	void Button_phy_rev_join_click(Base_control& sender);
     void Exit_click(const std::string&);
     void On_mouse_down(float x, float y, float b);
     void On_mouse_up(float x, float y, float b);

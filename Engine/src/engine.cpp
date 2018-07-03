@@ -313,7 +313,21 @@ namespace Engine
         return nullptr;
     }
 
-    bool Physic_paused()
+
+	std::vector<b2Body*> Get_bodies_at_point(const vec2& p)
+	{
+		std::vector<b2Body*> res;
+		for (const auto& obj : game_objects_) {
+			if (obj->Get_type() == otPhysicShape) {
+				if (obj->Cursor_enter(p)) {
+					res.push_back(obj->Get_body());
+				}
+			}
+		}
+		return res;
+	}
+
+	bool Physic_paused()
     {
         return phy_pause_;
     }

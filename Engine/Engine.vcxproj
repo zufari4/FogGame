@@ -39,6 +39,8 @@
     <ClInclude Include="src\physic_distance_join.h" />
     <ClInclude Include="src\physic_distance_join_editable.h" />
     <ClInclude Include="src\physic_object.h" />
+    <ClInclude Include="src\physic_revolute_joint.h" />
+    <ClInclude Include="src\physic_revolute_joint_editable.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\texture.h" />
   </ItemGroup>
@@ -62,6 +64,8 @@
     <ClCompile Include="src\physic_distance_join.cpp" />
     <ClCompile Include="src\physic_distance_join_editable.cpp" />
     <ClCompile Include="src\physic_object.cpp" />
+    <ClCompile Include="src\physic_revolute_joint.cpp" />
+    <ClCompile Include="src\physic_revolute_joint_editable.cpp" />
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
