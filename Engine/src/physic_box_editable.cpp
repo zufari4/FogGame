@@ -76,8 +76,11 @@ void Physic_box_editable::Draw() const
 
 void Physic_box_editable::Update(Uint32)
 {
-	Editable_box::Set_pos(body_->GetPosition());
-	Editable_box::Rotate(body_->GetAngle() - Editable_box::angle_);
+	pos_ = body_->GetPosition();
+    angle_ = body_->GetAngle();
+    for (int i = 0; i < 4; i++) {
+        vertex_[i] = body_->GetWorldPoint(box_shape_->GetVertex(i));
+    }
 }
 
 b2Body* Physic_box_editable::Get_body() const
