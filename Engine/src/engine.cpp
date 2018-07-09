@@ -1,6 +1,8 @@
 #include "engine.h"
 #include "Gui.h"
 #include "loger.h"
+#include <mutex>
+#include <thread>
 
 namespace Engine
 {
@@ -11,17 +13,16 @@ namespace Engine
     std::atomic_bool is_done_ = true;
     SDL_Window*   window_ = nullptr;
     SDL_GLContext gl_context_ = nullptr;
+	bool          phy_init_ = false;
     double        phy_step_ = 0;
     float         phy_step_s_ = 0;
     int           phy_vel_iters_ = 0;
     int           phy_pos_iters_ = 0;
-    double        phy_accum_ = 0;
-    Uint32        phy_last_ = 0;
-    bool          phy_is_updated_ = false;
     std::vector<Texture*> textures_;
     Texture       empty_texture_;
     std::vector<Game_object*> game_objects_;
     SDL_Event     event_;
+	std::thread*  phy_thread_ = nullptr;
     i1_callback_link cb_frame_;
     f2_callback_link cb_window_resize_;
     f2_callback_link cb_mouse_move_;
@@ -77,7 +78,7 @@ namespace Engine
         phy_vel_iters_ = vel_iters;
         phy_pos_iters_ = pos_iters;
         phy_world_.SetGravity(gravity);
-
+		phy_init_ = true;
         return true;
     }
 
@@ -100,7 +101,7 @@ namespace Engine
                 break;
             case SDL_MOUSEMOTION:
             {
-                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                vec2 cursor = s2w(event_.button.x, event_.button.y);
                 for (const auto& obj : game_objects_) {
                     obj->On_mouse_move(cursor.x, cursor.y);
                 }
@@ -111,7 +112,7 @@ namespace Engine
             break;
             case SDL_MOUSEBUTTONDOWN:
             {
-                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                vec2 cursor = s2w(event_.button.x, event_.button.y);
                 if (phy_pause_)
                 {
                     for (const auto& obj : game_objects_) {
@@ -134,7 +135,7 @@ namespace Engine
             break;
             case SDL_MOUSEBUTTONUP:
             {
-                vec2 cursor((float)event_.button.x * camera_scale_, (float)event_.button.y * camera_scale_);
+                vec2 cursor = s2w(event_.button.x, event_.button.y);
                 for (const auto& obj : game_objects_)
                     obj->On_mouse_up(cursor.x, cursor.y, event_.button.button);
                 if (cb_mouse_up_.func) {
@@ -155,21 +156,6 @@ namespace Engine
         }
     }
 
-    void Inetgrate_physics()
-    {
-        if (phy_pause_) {
-            phy_accum_ = 0;
-            phy_is_updated_ = false;
-        }
-        else {
-            phy_is_updated_ = phy_accum_ >= phy_step_;
-            while (phy_accum_ >= phy_step_) {
-                phy_world_.Step(phy_step_s_, phy_vel_iters_, phy_pos_iters_);
-                phy_accum_ -= phy_step_;
-            }
-        }
-    }
-
     void Cleanup()
     {
         for (auto it : game_objects_)
@@ -185,33 +171,62 @@ namespace Engine
         SDL_Quit();
     }
 
+	void Physic_thread()
+	{
+		Uint32 now;
+		Uint32 last = SDL_GetTicks();
+		double accum = 0;
+		bool   needUpdate = false;
+
+		while (!is_done_)
+		{
+			if (phy_pause_) {
+				accum = 0;
+				last = SDL_GetTicks();
+				continue;
+			}
+
+			now = SDL_GetTicks();
+			accum += (now - last);
+			last = now;
+			if (accum > 160) accum = phy_step_;
+			needUpdate = accum >= phy_step_;
+
+			while (accum >= phy_step_) {
+				phy_world_.Step(phy_step_s_, phy_vel_iters_, phy_pos_iters_);
+				accum -= phy_step_;
+			}
+
+			if (needUpdate) {
+				for (const auto& it : game_objects_) {
+					it->Update(now);
+				}
+			}
+		}
+	}
+
     void Run()
     {
         if (!is_init_) return;
         is_done_ = false;
         Uint32 now;
-        phy_last_ = SDL_GetTicks();
-        phy_accum_ = 0;
-        phy_is_updated_ = false;
+
+		if (phy_init_) {
+			phy_thread_ = new std::thread(Physic_thread);
+		}
 
         while (!is_done_)
         {
+			now = SDL_GetTicks();
             Parse_events();
-
-            now = SDL_GetTicks();
-            phy_accum_ += (now - phy_last_);
-            phy_last_ = now;
-            if (phy_accum_ > 160) phy_accum_ = phy_step_;
-            Inetgrate_physics();
 
             glClear(GL_COLOR_BUFFER_BIT);
             Gui::New_frame();
 
             for (const auto& it : game_objects_) {
-                if (phy_is_updated_)
-                    it->Update(now);
-                if (it->Is_visible())
-                    it->Draw();
+				if (it->Is_visible()) {
+					it->Draw();
+				}
             }
 
             if (cb_frame_.func) {
@@ -228,6 +243,9 @@ namespace Engine
     void Stop()
     {
         is_done_ = true;
+		if (phy_thread_) {
+			phy_thread_->join();
+		}
     }
 
     void Setup_camera(float width, float height, float scale)
@@ -269,14 +287,10 @@ namespace Engine
     void Pause_physics()
     {
         phy_pause_ = true;
-        phy_is_updated_ = false;
     }
 
     void Start_physics()
     {
-        phy_accum_ = 0;
-        phy_is_updated_ = false;
-        phy_last_ = SDL_GetTicks();
         phy_pause_ = false;
     }
 
@@ -348,9 +362,15 @@ namespace Engine
     }
 
 
-	const vec2 Scale_vec2(float x, float y)
+	const vec2 s2w(float x, float y)
 	{
 		return vec2(x * camera_scale_, y * camera_scale_);
+	}
+
+
+	const vec2 s2w(int x, int y)
+	{
+		return vec2(static_cast<float>(x) * camera_scale_, static_cast<float>(y) * camera_scale_);
 	}
 
 	void SetWindowTitle(const char* text)

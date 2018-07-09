@@ -5,7 +5,7 @@ Line_segment_shape::Line_segment_shape():
 	Base_shape()
 {
 	vertex_.resize(2);
-	Set_line(vec2_zero, Engine::Scale_vec2(200.0f, 0.0f));
+	Set_line(vec2_zero, Engine::s2w(200.0f, 0.0f));
 }
 
 void Line_segment_shape::Set_line(const vec2& a, const vec2& b)

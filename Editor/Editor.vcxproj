@@ -129,7 +129,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Imgui;$(SolutionDir)SDL2\include;$(SolutionDir)Box2D;$(SolutionDir)Engine\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;Box2Dd.lib;SDL2main.lib;SDL2.lib;freetype281MT.lib;imgui_d.lib;engine_d.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Build;$(SolutionDir)SDL2\lib\x64</AdditionalLibraryDirectories>

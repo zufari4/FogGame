@@ -6,7 +6,7 @@ Physic_distance_join_editable::Physic_distance_join_editable():
 	Physic_distance_join(),
 	Editable_line_segment()
 {
-	Connect_at_points(vec2_zero, Engine::Scale_vec2(200.0f, 0.0f));
+	Connect_at_points(vec2_zero, Engine::s2w(200.0f, 0.0f));
 }
 
 bool Physic_distance_join_editable::Cursor_enter(const vec2& cursor) const

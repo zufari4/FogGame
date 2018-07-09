@@ -16,7 +16,7 @@ Physic_box::Physic_box():
 	fixture_def_.friction = 0.5f;
 	fixture_def_.restitution = 0.4f;
 
-	Set_body_rect(b2Vec2_zero, Engine::Scale_vec2(80.0f, 80.0f));
+	Set_body_rect(b2Vec2_zero, Engine::s2w(80.0f, 80.0f));
 }
 
 Physic_box::~Physic_box()
@@ -87,5 +87,5 @@ vec2 Physic_box::Calc_center(const vec2(&vertex)[4])
 		y < std::min(y3, y4) || y > std::max(y3, y4)) return b2Vec2_zero;
 
 	// Return the point of intersection
-	return vec2(x, y);
+	return vec2(static_cast<float>(x), static_cast<float>(y));
 }

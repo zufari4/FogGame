@@ -8,12 +8,9 @@ Base_shape::Base_shape():
 
 void Base_shape::Move(const vec2& delta)
 {
-    if (delta.LengthSquared() > 0.0f)
-    {
-        pos_ += delta;
-        for (size_t i = 0; i < vertex_.size(); ++i)
-            vertex_[i] += delta;
-    }
+    pos_ += delta;
+    for (size_t i = 0; i < vertex_.size(); ++i)
+        vertex_[i] += delta;
 }
 
 
@@ -25,9 +22,18 @@ void Base_shape::Draw() const
 	glEnd();
 }
 
-void Base_shape::Set_pos(const vec2& p)
+void Base_shape::Set_pos(const vec2& newpos)
 {
-    Move(p - pos_);
+	Move(newpos - pos_);   
+}
+
+
+void Base_shape::Set_pos(const vec2& newpos, float angle)
+{
+	const vec2 delta = newpos - pos_;
+	pos_ = newpos;
+	/*for (size_t i = 0; i < vertex_.size(); ++i)
+		vertex_[i] = vertex_identity_ + delta;*/
 }
 
 void Base_shape::Rotate(float delta_rad)
